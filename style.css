@@ -1,0 +1,72 @@
+/* Alap stílusok */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f8f9fa;
+    margin: 0;
+    padding: 0;
+}
+
+/* Navigációs sáv kék színű */
+.navbar {
+    background-color: #007bff; /* Kék háttér */
+}
+
+.navbar-brand {
+    display: flex;
+    align-items: center;
+    font-size: 1.8em;
+    color: #fff;
+}
+
+.navbar-brand img {
+    width: 40px; /* A logó mérete */
+    height: 40px;
+}
+
+.nav-link {
+    color: #fff !important;
+}
+
+.nav-link:hover {
+    color: #d1d1d1 !important;
+}
+
+/* Képek középre igazítása */
+.center {
+    text-align: center;
+}
+
+/* Egyéb szakaszok stílusai */
+.container {
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+
+/* A nav sáv fix tetejű legyen */
+.navbar.fixed-top {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+}
+
+h2 {
+    color: #343a40;
+    font-size: 1.8em;
+    margin-bottom: 15px;
+}
+
+p {
+    font-size: 1.1em;
+    line-height: 1.6;
+}
+
+/* Margin-top-ot adunk az oldal tartalmához, hogy ne lógjon alá a navigációs sáv */
+.mt-5.pt-5 {
+    margin-top: 70px; /* A navbar magassága */
+    padding-top: 20px;
+}
