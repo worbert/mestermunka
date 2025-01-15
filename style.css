@@ -18,11 +18,6 @@ body {
     color: #fff;
 }
 
-.navbar-brand img {
-    width: 40px; /* A logó mérete */
-    height: 40px;
-}
-
 .nav-link {
     color: #fff !important;
 }
@@ -65,8 +60,7 @@ p {
     line-height: 1.6;
 }
 
-/* Margin-top-ot adunk az oldal tartalmához, hogy ne lógjon alá a navigációs sáv */
 .mt-5.pt-5 {
-    margin-top: 70px; /* A navbar magassága */
+    margin-top: 70px;
     padding-top: 20px;
 }
