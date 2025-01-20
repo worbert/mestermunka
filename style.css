@@ -64,3 +64,41 @@ p {
     margin-top: 70px;
     padding-top: 20px;
 }
+
+/* Navigációs gombok balra és jobbra pozicionálása */
+.carousel-control-prev {
+    left: 0; /* Bal oldalra pozícionálás */
+}
+
+.carousel-control-next {
+    right: 0; /* Jobb oldalra pozícionálás */
+}
+
+/* Gombok alapméret és háttérstílus */
+.carousel-control-prev,
+.carousel-control-next {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: calc(2.25rem + 4px);
+    height: calc(2.25rem + 4px);
+    background-color: rgba(128, 128, 128, 0.5);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.3s ease;
+}
+
+/* Hover effektus */
+.carousel-control-prev:hover,
+.carousel-control-next:hover {
+    background-color: rgba(128, 128, 128, 0.8);
+}
+
+/* Ikonok stílusa */
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+    width: 1rem;
+    height: 1rem;
+}
