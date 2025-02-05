@@ -19,11 +19,3 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 });
-
-function openGmailCompose() {
-    window.open(
-        'https://mail.google.com/mail/u/0/?view=cm&to=yamahasok@gmail.com',
-        'gmailWindow',
-        'width=600,height=600'
-    );
-}
