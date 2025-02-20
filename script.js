@@ -122,3 +122,115 @@ function login() {
     localStorage.setItem('userLoggedIn', 'true');
     window.location.href = 'index.html';
 }
+
+const userId = sessionStorage.getItem("loggedInUserId"); // Bejelentkezett felhasználó
+const recipientId = 2; // Ideiglenesen egy másik felhasználó ID-ja (választható a felületen)
+
+// Üzenet küldése
+async function sendMessage() {
+    const messageInput = document.getElementById("message");
+    const message = messageInput.value;
+
+    if (!message.trim()) return;
+
+    await fetch("backend/send_message.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            felado_id: userId,
+            cimzett_id: recipientId,
+            uzenet: message,
+        }),
+    });
+
+    messageInput.value = "";
+    loadMessages();
+}
+
+// Üzenetek lekérése
+async function loadMessages() {
+    const response = await fetch(`backend/get_messages.php?felado_id=${userId}&cimzett_id=${recipientId}`);
+    const messages = await response.json();
+
+    const chatBox = document.getElementById("chat-box");
+    chatBox.innerHTML = messages
+        .map(
+            (msg) =>
+                `<div class="${msg.felado_id == userId ? 'own' : 'other'}">
+                    <strong>${msg.felado_nev}:</strong> ${msg.uzenet} <span>(${msg.kuldes_ido})</span>
+                </div>`
+        )
+        .join("");
+}
+
+// Chat frissítése 3 másodpercenként
+setInterval(loadMessages, 3000);
+
+document.addEventListener("DOMContentLoaded", async () => {
+    const notificationCount = document.getElementById("notification-count");
+
+    async function checkNotifications() {
+        const userId = sessionStorage.getItem("loggedInUserId");
+        if (!userId) return;
+
+        const response = await fetch(`backend/check_notifications.php?user_id=${userId}`);
+        const data = await response.json();
+
+        if (data.unreadCount > 0) {
+            notificationCount.textContent = data.unreadCount;
+            notificationCount.classList.remove("d-none");
+        } else {
+            notificationCount.classList.add("d-none");
+        }
+    }
+
+    // Induláskor ellenőrizzük az értesítéseket
+    checkNotifications();
+
+    // Frissítés 10 másodpercenként
+    setInterval(checkNotifications, 10000);
+});
+
+document.addEventListener("DOMContentLoaded", () => {
+    const chatButton = document.getElementById("chat-button");
+    const chatContainer = document.getElementById("chat-container");
+    const chatBox = document.getElementById("chat-box");
+    const closeChat = document.getElementById("close-chat");
+    const friendsList = document.getElementById("friends");
+
+    // Dummy barátlista (később PHP adatbázisból töltjük be)
+    const friends = [
+        { id: 1, name: "Józsi", avatar: "avatar1.jpg" },
+        { id: 2, name: "Béla", avatar: "avatar2.jpg" }
+    ];
+
+    // Chat gomb kattintás
+    chatButton.addEventListener("click", () => {
+        chatContainer.style.display = chatContainer.style.display === "flex" ? "none" : "flex";
+    });
+
+    // Barátlista betöltése
+    function loadFriends() {
+        friendsList.innerHTML = "";
+        friends.forEach(friend => {
+            const li = document.createElement("li");
+            li.textContent = friend.name;
+            li.addEventListener("click", () => openChat(friend));
+            friendsList.appendChild(li);
+        });
+    }
+
+    // Chat megnyitása
+    function openChat(friend) {
+        document.getElementById("chat-avatar").src = friend.avatar;
+        document.getElementById("chat-name").textContent = friend.name;
+        chatBox.classList.remove("hidden");
+    }
+
+    // Chat bezárása
+    closeChat.addEventListener("click", () => {
+        chatBox.classList.add("hidden");
+    });
+
+    loadFriends();
+});

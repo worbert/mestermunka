@@ -33,34 +33,64 @@
         </div>
     </nav>
 
-    <div class="container mt-5 pt-5">
-        <div id="imageCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="5000">
-            <div class="carousel-inner">
+    <div class="container mt-5 pt-5 position-relative" style="max-width: 1000px; height: 500px; overflow: hidden;">
+        <div id="imageCarousel" class="carousel slide" data-bs-ride="carousel" >
+            <div class="carousel-inner" style="height: 80%;">
                 <div class="carousel-item active">
-                    <center>
-                        <img src="/img/yamahasok_logo.jpg" class="d-block w-50" alt="Kép 1">
-                    </center>
+                    <a href="rolunk.html">
+                        <img src="/img/rolunk_img.png" class="d-block w-100" style="height: 60%; object-fit: contain;" alt="Kép 1">
+                    </a>
                 </div>
                 <div class="carousel-item">
-                    <center>
-                        <img src="/img/kakucs2024.jpg" class="d-block w-50" alt="Kép 2">
-                    </center>
+                    <img src="/img/kakucs2024.jpg" class="d-block w-100" style="height: 100%; object-fit: contain;" alt="Kép 2">
                 </div>
                 <div class="carousel-item">
-                    <center>
-                        <img src="/img/piknik202404.jpg" class="d-block w-50" alt="Kép 3">
-                    </center>
+                    <img src="/img/piknik202404.jpg" class="d-block w-100" style="height: 100%; object-fit: contain;" alt="Kép 3">
                 </div>
             </div>
-            <button class="carousel-control-prev" type="button" data-bs-target="#imageCarousel" data-bs-slide="prev">
+            <button class="carousel-control-prev" type="button" data-bs-target="#imageCarousel" data-bs-slide="prev" style="top: 50%; transform: translateY(-50%);">
                 <span class="carousel-control-prev-icon" aria-hidden="true"></span>
                 <span class="visually-hidden">Előző</span>
             </button>
-            <button class="carousel-control-next" type="button" data-bs-target="#imageCarousel" data-bs-slide="next">
+            <button class="carousel-control-next" type="button" data-bs-target="#imageCarousel" data-bs-slide="next" style="top: 50%; transform: translateY(-50%);">
                 <span class="carousel-control-next-icon" aria-hidden="true"></span>
                 <span class="visually-hidden">Következő</span>
             </button>
         </div>
+    </div>
+    
+    <div id="chat-button">
+        <i class="fas fa-comment-dots"></i>
+    </div>
+
+    <!-- Chat ablak -->
+    <div id="chat-container">
+        
+        <!-- Barátok listája vagy kereső -->
+        <div id="friend-list">
+            <h3>Barátok</h3>
+            <input type="text" id="search-friends" placeholder="Keresés...">
+            <ul id="friends">
+                <!-- Itt jelennek meg a barátok dinamikusan -->
+            </ul>
+        </div>
+
+        <!-- Chat ablak -->
+        <div id="chat-box" class="hidden">
+            <div id="chat-header">
+                <img src="avatar.jpg" id="chat-avatar">
+                <span id="chat-name">Felhasználó</span>
+                <i class="fas fa-times" id="close-chat"></i>
+            </div>
+            <div id="chat-messages">
+                <!-- Ide jönnek az üzenetek -->
+            </div>
+            <div id="chat-input">
+                <input type="text" id="message-input" placeholder="Aa">
+                <button id="send-message"><i class="fas fa-paper-plane"></i></button>
+            </div>
+        </div>
+
     </div>
 
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-bottom">
@@ -69,7 +99,7 @@
             <a href="https://www.facebook.com/groups/662406200502336" target="_blank" class="text-white me-3">
                 <i class="bi bi-facebook" style="font-size: 1.5rem;"></i>
             </a>
-            <a href="mailto:yamahasok@gmail.com" class="text-white">
+            <a href="https://mail.google.com/mail/u/0/?view=cm&fs=1&to=yamahasok@gmail.com&su=Tárgy&body=Üzenet" target="_blank" class="text-white">
                 <i class="bi bi-envelope-fill" style="font-size: 1.5rem;"></i>
             </a>            
         </div>
