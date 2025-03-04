@@ -2,8 +2,8 @@
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Gép: 127.0.0.1
--- Létrehozás ideje: 2025. Már 03. 10:24
+-- Gép: 127.0.0.1:3307
+-- Létrehozás ideje: 2025. Már 04. 08:31
 -- Kiszolgáló verziója: 10.4.28-MariaDB
 -- PHP verzió: 8.2.4
 
@@ -252,6 +252,61 @@ ALTER TABLE `motorok`
 --
 ALTER TABLE `users`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- Megkötések a kiírt táblákhoz
+--
+
+--
+-- Megkötések a táblához `beszelgetesek`
+--
+ALTER TABLE `beszelgetesek`
+  ADD CONSTRAINT `beszelgetesek_ibfk_1` FOREIGN KEY (`chat_tag_id`) REFERENCES `users` (`id`);
+
+--
+-- Megkötések a táblához `esemenyek`
+--
+ALTER TABLE `esemenyek`
+  ADD CONSTRAINT `esemenyek_ibfk_1` FOREIGN KEY (`id`) REFERENCES `esemeny_resztvevok` (`esemeny_id`);
+
+--
+-- Megkötések a táblához `esemeny_resztvevok`
+--
+ALTER TABLE `esemeny_resztvevok`
+  ADD CONSTRAINT `esemeny_resztvevok_ibfk_1` FOREIGN KEY (`felhasznalo_id`) REFERENCES `users` (`id`);
+
+--
+-- Megkötések a táblához `friends`
+--
+ALTER TABLE `friends`
+  ADD CONSTRAINT `friends_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
+  ADD CONSTRAINT `friends_ibfk_2` FOREIGN KEY (`friend_id`) REFERENCES `users` (`id`);
+
+--
+-- Megkötések a táblához `kepek`
+--
+ALTER TABLE `kepek`
+  ADD CONSTRAINT `kepek_ibfk_1` FOREIGN KEY (`feltolto_id`) REFERENCES `users` (`id`);
+
+--
+-- Megkötések a táblához `messages`
+--
+ALTER TABLE `messages`
+  ADD CONSTRAINT `messages_ibfk_1` FOREIGN KEY (`sender_id`) REFERENCES `users` (`id`),
+  ADD CONSTRAINT `messages_ibfk_2` FOREIGN KEY (`receiver_id`) REFERENCES `users` (`id`);
+
+--
+-- Megkötések a táblához `olvasott_ertesitesek`
+--
+ALTER TABLE `olvasott_ertesitesek`
+  ADD CONSTRAINT `olvasott_ertesitesek_ibfk_1` FOREIGN KEY (`esemeny_id`) REFERENCES `esemenyek` (`id`),
+  ADD CONSTRAINT `olvasott_ertesitesek_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `messages` (`id`);
+
+--
+-- Megkötések a táblához `users`
+--
+ALTER TABLE `users`
+  ADD CONSTRAINT `users_ibfk_1` FOREIGN KEY (`id`) REFERENCES `motorok` (`tulaj_id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
