@@ -20,63 +20,104 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 });
 
-//bejelentkezés
-async function login() {
+//Bejelentkezés
+function login() {
     const username = document.getElementById("username").value;
     const password = document.getElementById("password").value;
-    const message = document.getElementById("message");
-
-    const response = await fetch("backend/login.php", {
+    const rememberMe = document.getElementById("rememberMe").checked;
+    
+    fetch("http://localhost:3301/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, password }),
-    });
-
-    const result = await response.json();
-    message.style.color = result.success ? "green" : "red";
-    message.textContent = result.message;
-
-    if (result.success) {
-        sessionStorage.setItem("loggedInUser", username);
-        sessionStorage.setItem("justLoggedIn", "true");
-
-        setTimeout(() => {
-            window.location.href = "index.html";
-        }, 2000);
-    }
+        body: JSON.stringify({ username, password })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.error) {
+            alert(data.error);
+        } else {
+            alert("Sikeres bejelentkezés!");
+            if (rememberMe) {
+                localStorage.setItem("loggedInUser", JSON.stringify(data.user));
+            } else {
+                sessionStorage.setItem("loggedInUser", JSON.stringify(data.user));
+            }
+            window.location.href = data.user.role === "admin" ? "esemenyek.html" : "index.html";
+        }
+    })
+    .catch(error => console.error("Hiba:", error));
 }
 
 
-//regisztáció
-async function register() {
-    const email = document.getElementById("email").value;
-    const username = document.getElementById("username").value;
-    const password = document.getElementById("password").value;
+//Regisztráció
+function register() {
+    const email = document.getElementById("email").value.trim();
+    const username = document.getElementById("username").value.trim();
+    const password = document.getElementById("password").value.trim();
+    const confirmPassword = document.getElementById("confirmPassword").value.trim();
     const message = document.getElementById("message");
 
-    if (!email || !username || !password) {
+    // Ellenőrizzük, hogy minden mező ki van-e töltve
+    if (!email || !username || !password || !confirmPassword) {
+        message.style.color = "red";
         message.textContent = "Minden mezőt ki kell tölteni!";
         return;
     }
 
-    const response = await fetch("backend/register.php", {
+    // Ellenőrizzük az e-mail formátumát
+    if (!isValidEmail(email)) {
+        message.style.color = "red";
+        message.textContent = "Az e-mail cím formátuma nem megfelelő!";
+        return;
+    }
+
+    // Ellenőrizzük, hogy a jelszó megfelel-e a biztonsági követelményeknek
+    if (!isValidPassword(password)) {
+        message.style.color = "red";
+        message.textContent = "A jelszónak legalább 8 karakter hosszúnak kell lennie, és tartalmaznia kell egy nagybetűt és egy számot!";
+        return;
+    }
+
+    // Ellenőrizzük, hogy a két jelszó megegyezik-e
+    if (password !== confirmPassword) {
+        message.style.color = "red";
+        message.textContent = "A két jelszó nem egyezik!";
+        return;
+    }
+
+    // Küldés a szervernek
+    fetch("http://localhost:3301/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, username, password }),
-    });
-
-    const result = await response.json();
-    message.style.color = result.success ? "green" : "red";
-    message.textContent = result.message;
-
-    if (result.success) {
-        setTimeout(() => {
-            window.location.href = "bejelentkezes.html";
-        }, 2000);
-    }
+        body: JSON.stringify({ email, username, password })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.error) {
+            message.style.color = "red";
+            message.textContent = data.error;
+        } else {
+            message.style.color = "green";
+            message.textContent = "Sikeres regisztráció!";
+            setTimeout(() => window.location.href = "bejelentkezes.html", 2000);
+        }
+    })
+    .catch(error => console.error("Hiba:", error));
 }
 
-//loginbox
+// E-mail validálás funkció
+function isValidEmail(email) {
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailPattern.test(email);
+}
+
+// Jelszó validálás funkció
+function isValidPassword(password) {
+    const passwordPattern = /^(?=.*[A-Z])(?=.*\d).{8,}$/;
+    return passwordPattern.test(password);
+}
+
+//Bejelentkezési értesítés
 document.addEventListener("DOMContentLoaded", () => {
     const justLoggedIn = sessionStorage.getItem("justLoggedIn");
     const loggedInUser = sessionStorage.getItem("loggedInUser");
@@ -87,44 +128,38 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 });
 
-// Ellenőrizzük, hogy van-e bejelentkezett felhasználó
-const userLoggedIn = localStorage.getItem('userLoggedIn') === 'true';
+//ki-be jelentkezes gomb
+document.addEventListener("DOMContentLoaded", () => {
+    const loginLogoutBtn = document.getElementById("loginLogoutBtn");
+    const loggedInUser = JSON.parse(localStorage.getItem("loggedInUser")) || JSON.parse(sessionStorage.getItem("loggedInUser"));
 
-const userSection = document.getElementById('user-section');
-const loginLink = document.getElementById('login-link');
+    if (!loginLogoutBtn) {
+        console.error("HIBA: A loginLogoutBtn elem nem található a DOM-ban!");
+        return;
+    }
 
-if (userLoggedIn) {
-    loginLink.style.display = 'none';
+    if (loggedInUser) {
+        console.log(`Bejelentkezett felhasználó: ${loggedInUser.username}`);
+        loginLogoutBtn.textContent = "Kijelentkezés";
+        loginLogoutBtn.href = "#";
 
-    const profileDropdown = document.createElement('li');
-    profileDropdown.className = 'nav-item dropdown';
-    profileDropdown.innerHTML = `
-        <a class="nav-link dropdown-toggle" href="#" id="profileDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            <i class="bi bi-person-circle"></i> Profil
-        </a>
-        <ul class="dropdown-menu" aria-labelledby="profileDropdown">
-            <li><a class="dropdown-item" href="profil.html">Profilom</a></li>
-            <li><a class="dropdown-item" href="#">Beállítások</a></li>
-            <li><a class="dropdown-item" href="#" onclick="logout()">Kijelentkezés</a></li>
-        </ul>
-    `;
-    userSection.appendChild(profileDropdown);
-}
+        loginLogoutBtn.addEventListener("click", (e) => {
+            e.preventDefault();
+            console.log("Kijelentkezés gombra kattintottál!");
 
-function logout() {
-    alert('Kijelentkeztél!');
-    localStorage.removeItem('userLoggedIn');
-    window.location.href = 'index.html';
-}
+            sessionStorage.clear();
+            localStorage.removeItem("loggedInUser");
 
-// Példa: Bejelentkezés után állítsd be a localStorage értékét
-function login() {
-    localStorage.setItem('userLoggedIn', 'true');
-    window.location.href = 'index.html';
-}
+            alert("Sikeresen kijelentkeztél!");
+            window.location.href = "index.html";
+        });
 
-const userId = sessionStorage.getItem("loggedInUserId"); // Bejelentkezett felhasználó
-const recipientId = 2; // Ideiglenesen egy másik felhasználó ID-ja (választható a felületen)
+    } else {
+        console.log("Nincs bejelentkezve felhasználó.");
+        loginLogoutBtn.textContent = "Bejelentkezés";
+        loginLogoutBtn.href = "bejelentkezes.html";
+    }
+});
 
 // Üzenet küldése
 async function sendMessage() {
@@ -233,4 +268,34 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     loadFriends();
+
+    document.addEventListener("DOMContentLoaded", function () {
+        // Példa: A felhasználói adatok betöltése localStorage-ból
+        const user = JSON.parse(localStorage.getItem("felhasznalok"));
+    
+        if (user) {
+            document.getElementById("username").textContent = user.name;
+            document.getElementById("Email").textContent = user.email;
+            document.getElementById("joinDate").textContent = user.joinDate;
+        } else {
+            // Ha nincs bejelentkezett felhasználó, átirányítás a login oldalra
+            window.location.href = "login.html";
+        }
+    });
+    
+    function logout() {
+        // Töröljük a felhasználói adatokat
+        localStorage.removeItem("user");
+    
+        // Átirányítás a bejelentkezési oldalra
+        window.location.href = "login.html";
+    }
+    
+    function logout() {
+        fetch("logout.php")
+            .then(() => {
+                window.location.href = "login.html";
+            });
+    }
+    
 });
