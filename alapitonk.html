@@ -6,13 +6,14 @@
         <title>Yamahások</title>
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
         <link rel="stylesheet" href="style.css">
     </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
         <div class="container-fluid">
             <a class="navbar-brand d-flex align-items-center" href="index.html">
-                <img src="/img/yamahasok_logo.jpg" width="90px" height="60px" class="me-2">
+                <img src="img/yamahasok_logo.jpg" width="90px" height="60px" class="me-2">
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
@@ -45,6 +46,40 @@
             <h2>Alapítónk</h2>
         </center>
         <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Reprehenderit minus eligendi dicta laboriosam consequatur eius assumenda facilis exercitationem facere mollitia, officia vel maxime quidem. Corrupti.</p>
+    </div>
+
+    <div id="chat-button">
+        <i class="fas fa-comment"></i>
+    </div>
+
+    <!-- Chat ablak -->
+    <div id="chat-container">
+        
+        <!-- Barátok listája vagy kereső -->
+        <div id="friend-list">
+            <h3>Barátok</h3>
+            <input type="text" id="search-friends" placeholder="Keresés...">
+            <ul id="friends">
+                <!-- Itt jelennek meg a barátok dinamikusan -->
+            </ul>
+        </div>
+
+        <!-- Chat ablak -->
+        <div id="chat-box" class="hidden">
+            <div id="chat-header">
+                <img src="avatar.jpg" id="chat-avatar">
+                <span id="chat-name">Felhasználó</span>
+                <i class="fas fa-times" id="close-chat"></i>
+            </div>
+            <div id="chat-messages">
+                <!-- Ide jönnek az üzenetek -->
+            </div>
+            <div id="chat-input">
+                <input type="text" id="message-input" placeholder="Aa">
+                <button id="send-message"><i class="fas fa-paper-plane"></i></button>
+            </div>
+        </div>
+
     </div>
 
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-bottom">
