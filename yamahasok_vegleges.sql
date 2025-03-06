@@ -2,8 +2,8 @@
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Gép: 127.0.0.1:3307
--- Létrehozás ideje: 2025. Már 04. 08:31
+-- Gép: 127.0.0.1
+-- Létrehozás ideje: 2025. Már 05. 11:57
 -- Kiszolgáló verziója: 10.4.28-MariaDB
 -- PHP verzió: 8.2.4
 
@@ -139,6 +139,14 @@ CREATE TABLE `users` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_hungarian_ci;
 
 --
+-- A tábla adatainak kiíratása `users`
+--
+
+INSERT INTO `users` (`id`, `Vnev`, `Knev`, `Username`, `Email`, `Telefon`, `Password`, `Role`) VALUES
+(2, '', '', 'admin', 'admin@email.com', '', 'jelszo123', 1),
+(3, '', '', 'valaki', 'valaki@gmail.com', '', 'Valaki123', 0);
+
+--
 -- Indexek a kiírt táblákhoz
 --
 
@@ -251,7 +259,7 @@ ALTER TABLE `motorok`
 -- AUTO_INCREMENT a táblához `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- Megkötések a kiírt táblákhoz
@@ -261,19 +269,14 @@ ALTER TABLE `users`
 -- Megkötések a táblához `beszelgetesek`
 --
 ALTER TABLE `beszelgetesek`
-  ADD CONSTRAINT `beszelgetesek_ibfk_1` FOREIGN KEY (`chat_tag_id`) REFERENCES `users` (`id`);
-
---
--- Megkötések a táblához `esemenyek`
---
-ALTER TABLE `esemenyek`
-  ADD CONSTRAINT `esemenyek_ibfk_1` FOREIGN KEY (`id`) REFERENCES `esemeny_resztvevok` (`esemeny_id`);
+  ADD CONSTRAINT `beszelgetesek_ibfk_2` FOREIGN KEY (`chat_tag_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
 
 --
 -- Megkötések a táblához `esemeny_resztvevok`
 --
 ALTER TABLE `esemeny_resztvevok`
-  ADD CONSTRAINT `esemeny_resztvevok_ibfk_1` FOREIGN KEY (`felhasznalo_id`) REFERENCES `users` (`id`);
+  ADD CONSTRAINT `esemeny_resztvevok_ibfk_1` FOREIGN KEY (`esemeny_id`) REFERENCES `esemenyek` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `esemeny_resztvevok_ibfk_2` FOREIGN KEY (`felhasznalo_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
 
 --
 -- Megkötések a táblához `friends`
@@ -286,7 +289,7 @@ ALTER TABLE `friends`
 -- Megkötések a táblához `kepek`
 --
 ALTER TABLE `kepek`
-  ADD CONSTRAINT `kepek_ibfk_1` FOREIGN KEY (`feltolto_id`) REFERENCES `users` (`id`);
+  ADD CONSTRAINT `kepek_ibfk_1` FOREIGN KEY (`feltolto_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
 
 --
 -- Megkötések a táblához `messages`
@@ -296,17 +299,17 @@ ALTER TABLE `messages`
   ADD CONSTRAINT `messages_ibfk_2` FOREIGN KEY (`receiver_id`) REFERENCES `users` (`id`);
 
 --
+-- Megkötések a táblához `motorok`
+--
+ALTER TABLE `motorok`
+  ADD CONSTRAINT `fk_tulaj` FOREIGN KEY (`tulaj_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
+
+--
 -- Megkötések a táblához `olvasott_ertesitesek`
 --
 ALTER TABLE `olvasott_ertesitesek`
-  ADD CONSTRAINT `olvasott_ertesitesek_ibfk_1` FOREIGN KEY (`esemeny_id`) REFERENCES `esemenyek` (`id`),
-  ADD CONSTRAINT `olvasott_ertesitesek_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `messages` (`id`);
-
---
--- Megkötések a táblához `users`
---
-ALTER TABLE `users`
-  ADD CONSTRAINT `users_ibfk_1` FOREIGN KEY (`id`) REFERENCES `motorok` (`tulaj_id`);
+  ADD CONSTRAINT `olvasott_ertesitesek_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
+  ADD CONSTRAINT `olvasott_ertesitesek_ibfk_2` FOREIGN KEY (`esemeny_id`) REFERENCES `esemenyek` (`id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

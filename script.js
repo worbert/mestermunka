@@ -299,3 +299,33 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     
 });
+
+document.addEventListener("DOMContentLoaded", function () {
+    fetch("api.php") // Kérdezzük le a bejelentkezési állapotot
+        .then(response => response.json())
+        .then(data => {
+            const userSection = document.getElementById("user-section");
+            if (data.loggedIn) {
+                // Ha be van jelentkezve, cseréljük le a bejelentkezési gombot a profilmenüre
+                userSection.innerHTML = `
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            ${data.username}
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                            <li><a class="dropdown-item" href="profil.html">Profilom</a></li>
+                            <li><a class="dropdown-item" href="logout.php">Kijelentkezés</a></li>
+                        </ul>
+                    </li>
+                `;
+            } else {
+                // Ha nincs bejelentkezve, marad a bejelentkezés gomb
+                userSection.innerHTML = `
+                    <li class="nav-item">
+                        <a class="nav-link" href="bejelentkezes.html">Bejelentkezés</a>
+                    </li>
+                `;
+            }
+        })
+        .catch(error => console.error("Hiba a bejelentkezési állapot lekérdezésekor:", error));
+});

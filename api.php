@@ -89,4 +89,18 @@ if ($user && password_verify($password, $user["Jelszo"])) {
     echo json_encode(["success" => false, "message" => "Hibás felhasználónév vagy jelszó!"]);
 }
 
+session_start();
+header('Content-Type: application/json');
+
+if (isset($_SESSION['user'])) {
+    echo json_encode(['loggedIn' => true, 'username' => $_SESSION['user']['Username']]);
+} else {
+    echo json_encode(['loggedIn' => false]);
+}
+exit;
+
+session_start();
+session_destroy();
+header("Location: index.html");
+exit;
 ?>
