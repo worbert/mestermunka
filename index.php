@@ -12,10 +12,10 @@ session_start();
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
         <div class="container-fluid">
             <a class="navbar-brand d-flex align-items-center" href="index.php">
-                <img src="img/yamahasok_logo.jpg" width="90" height="60" class="me-2" alt="Logo">
+                <img src="img/yamahasok_logo.jpg" width="90px" height="60px" class="me-2" alt="Logo">
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
@@ -25,22 +25,25 @@ session_start();
                     <li class="nav-item"><a class="nav-link" href="rolunk.php">Rólunk</a></li>
                     <li class="nav-item"><a class="nav-link" href="alapitonk.php">Alapítónk</a></li>
                     <li class="nav-item"><a class="nav-link" href="esemenyek.php">Események</a></li>
-                    <li class="nav-item"><a class="nav-link" href="galeria.php">Galéria</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="galeria.php">Galéria</a></li>
+                    <li classnav-item><a class="nav-link" href="admin.php">admin</a></li>
                 </ul>
-                <ul class="navbar-nav ms-auto" id="user-section">
-                    <?php if (isset($_SESSION["username"])): ?>
-                        <li class="nav-item">
-                            <span class="nav-link">Üdv, <?php echo htmlspecialchars($_SESSION["username"]); ?>!</span>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="logout.php">Kijelentkezés</a>
-                        </li>
-                    <?php else: ?>
-                        <li class="nav-item" id="login-link">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item dropdown">
+                        <?php if (isset($_SESSION["username"])): ?>
+                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Üdv, <?php echo htmlspecialchars($_SESSION["username"]); ?>!
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                            <li><a class="dropdown-item" href="profil.php">Profilom</a></li>
+                            <li><a class="dropdown-item" href="logout.php">Kijelentkezés</a></li>
+                        </ul>
+                        <?php else: ?>
                             <a class="nav-link" href="bejelentkezes.php">Bejelentkezés</a>
-                        </li>
-                    <?php endif; ?>
+                        <?php endif; ?>
+                    </li>
                 </ul>
+
             </div>
         </div>
     </nav>
@@ -49,7 +52,7 @@ session_start();
         <div id="imageCarousel" class="carousel slide" data-bs-ride="carousel">
             <div class="carousel-inner" style="height: 80%;">
                 <div class="carousel-item active">
-                    <a href="rolunk.html">
+                    <a href="rolunk.php">
                         <img src="img/rolunk_img.png" class="d-block w-100" style="height: 60%; object-fit: contain;" alt="Kép 1">
                     </a>
                 </div>
@@ -71,9 +74,11 @@ session_start();
         </div>
     </div>
 
-    /
 
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-bottom">
+        <div class="container-fluid d-flex justify-content-left align-items-left">
+            <a class="text-white me3" href="adatvédelmi nyilatkozat.pdf">Adatvédelmi nyilatkozat</a>
+        </div>
         <div class="container-fluid d-flex justify-content-center align-items-center">
             <span class="text-white me-3">Elérhetőségek:</span>
             <a href="https://www.facebook.com/groups/662406200502336" target="_blank" class="text-white me-3">

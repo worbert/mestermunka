@@ -3,14 +3,16 @@ const express = require("express");
 const mysql = require("mysql");
 const cors = require("cors");
 const app = express();
+const cookieParser = require("cookie-parser");
 app.use(cors());
 app.use(express.json());
+app.use(cookieParser());
 
 //MySQL adatbázis kapcsolat
 const db = mysql.createConnection({
     host: "localhost",
     user: "root",
-    port: "3307",
+    port: "3306",
     password: "",  
     database: "yamahasok"
 });
@@ -51,85 +53,20 @@ app.post("/register", (req, res) => {
     );
 });
 
-//admin
-const multer = require("multer");
-const path = require("path");
-
-
-// Felhasználók listázása
-app.get("/users", (req, res) => {
-    db.query("SELECT id, username, email, role FROM users", (err, results) => {
-        if (err) return res.status(500).json({ error: err.message });
-        res.json(results);
-    });
+// Sütikbeállítás útvonal
+app.get("/set-cookie", (req, res) => {
+    res.cookie("test_cookie", "value123", { maxAge: 3600000, httpOnly: true });
+    res.send("Süti beállítva!");
 });
 
-
-// Felhasználó törlése
-app.delete("/users/:id", (req, res) => {
-    const userId = req.params.id;
-    db.query("DELETE FROM users WHERE id = ?", [userId], (err, result) => {
-        if (err) return res.status(500).json({ error: err.message });
-        res.json({ message: "Felhasználó törölve!" });
-    });
+// Süti lekérdezés
+app.get("/get-cookie", (req, res) => {
+    res.send(`Süti értéke: ${req.cookies.test_cookie}`);
 });
 
-
-app.get("/esemenyek", (req, res) => {
-    db.query("SELECT * FROM esemenyek", (err, results) => {
-        if (err) {
-            console.error("Hiba az események lekérdezésekor:", err);
-            return res.status(500).json({ error: err.message });
-        }
-        res.json(results);
-    });
-});
-
-app.post("/esemenyek", (req, res) => {
-    const { Helyszin, Idopont } = req.body;
-    db.query("INSERT INTO esemenyek (Helyszin, Idopont) VALUES (?, ?)", [Helyszin, Idopont], (err, result) => {
-        if (err) {
-            console.error("SQL Hiba:", err);
-            return res.status(500).json({ error: err.message });
-        }
-        res.json({ message: "Esemény sikeresen hozzáadva!" });
-    });
-});
+app.listen(3000, () => console.log("Szerver fut a 3000-es porton"));
 
 
-app.post("/esemenyek", (req, res) => {
-    const { Helyszin, date } = req.body;
-    db.query("INSERT INTO esemenyek (Helyszin, Idopont) VALUES (?, ?)", [Helyszin, Idopont], (err, result) => {
-        if (err) {
-            console.error("SQL Hiba:", err);
-            return res.status(500).json({ error: err.message });
-        }
-        res.json({ message: "Esemény sikeresen hozzáadva!" });
-    });
-});
-
-
-app.delete("/esemenyek/:id", (req, res) => {
-    const eventId = req.params.id;
-    db.query("DELETE FROM esemenyek WHERE id = ?", [eventId], (err, result) => {
-        if (err) return res.status(500).json({ error: err.message });
-        res.json({ message: "Esemény törölve!" });
-    });
-});
-
-//Képfeltöltés beállítása
-const storage = multer.diskStorage({
-    destination: "./img/",
-    filename: (req, file, cb) => {
-        cb(null, Date.now() + path.extname(file.originalname));
-    }
-});
-const upload = multer({ storage });
-
-app.post("/upload", upload.single("image"), (req, res) => {
-    if (!req.file) return res.status(400).json({ error: "Nincs feltöltött fájl!" });
-    res.json({ message: "Kép sikeresen feltöltve!", filePath: `/img/${req.file.filename}` });
-});
-
-const PORT = 3301;
+const PORT = 2222
+;
 app.listen(PORT, () => console.log(`Szerver fut a ${PORT} porton...`));

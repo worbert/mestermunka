@@ -5,7 +5,7 @@ ini_set('display_errors', 1);
 header("Content-Type: application/json");
 
 // Adatbázis kapcsolat
-$host = "127.0.0.1:3306"; // A te phpMyAdmin konfigurációd alapján
+$host = "localhost"; // A te phpMyAdmin konfigurációd alapján
 $dbname = "yamahasok";
 $username = "root"; // Cseréld le, ha nem root-ot használsz
 $password = ""; // Add meg a jelszót, ha van

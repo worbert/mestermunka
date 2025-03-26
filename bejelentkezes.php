@@ -8,7 +8,7 @@ if (isset($_SESSION["user_id"])) {
 }
 
 // Adatbázis kapcsolat
-$host = "127.0.0.1:3306"; // Ellenőrizd a portot!
+$host = "localhost"; // Ellenőrizd a portot!
 $dbname = "yamahasok";
 $username = "root";
 $password = "";

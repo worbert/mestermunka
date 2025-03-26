@@ -3,7 +3,7 @@ session_start();
 header("Content-Type: application/json");
 
 // Adatbázis kapcsolat
-$host = "3306";
+$host = "localhost";
 $dbname = "yamahasok";
 $username = "root";
 $password = "";
