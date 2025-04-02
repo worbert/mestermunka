@@ -1,6 +1,20 @@
 <?php
 session_start();
+
+// Adatbázis kapcsolat localhosttal
+$host = "localhost";
+$dbname = "yamahasok";
+$username = "root";
+$password = "";
+
+try {
+    $conn = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8mb4", $username, $password);
+    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+} catch (PDOException $e) {
+    die("Kapcsolódási hiba: " . $e->getMessage());
+}
 ?>
+
 <!DOCTYPE html>
 <html lang="hu">
 <head>
@@ -29,33 +43,49 @@ session_start();
                     <li class="nav-item"><a class="nav-link active" href="galeria.php">Galéria</a></li>
                 </ul>
                 <ul class="navbar-nav ms-auto">
-                    <?php if (isset($_SESSION["username"])): ?>
-                        <li class="nav-item">
-                            <span class="nav-link">Üdv, <?php echo htmlspecialchars($_SESSION["username"]); ?>!</span>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="profil.php">Profilom</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="logout.php">Kijelentkezés</a>
-                        </li>
-                    <?php else: ?>
-                        <li class="nav-item">
+                    <li class="nav-item dropdown">
+                        <?php if (isset($_SESSION["username"])): ?>
+                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Üdv, <?php echo htmlspecialchars($_SESSION["username"]); ?>!
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                            <li><a class="dropdown-item" href="profil.php">Profilom</a></li>
+                            <li><a class="dropdown-item" href="admin.php">Admin</a></li>
+                            <li><a class="dropdown-item" href="logout.php">Kijelentkezés</a></li>
+                        </ul>
+                        <?php else: ?>
                             <a class="nav-link" href="bejelentkezes.php">Bejelentkezés</a>
-                        </li>
-                    <?php endif; ?>
+                        <?php endif; ?>
+                    </li>
                 </ul>
             </div>
         </div>
     </nav>
+
     <div class="container mt-5 pt-5" id="galeria">
         <center><h2>Galéria</h2></center>
-        <a href="https://fb.me/e/3ItbF66GW">
-            <img src="img/kakucs2024.jpg" width="40%" height="40%">
-        </a>
-        <a href="https://fb.me/e/1Kd1ing1F">
-            <img src="img/piknik202404.jpg" width="40%" height="50%" style="margin-left: 250px;">
-        </a>
+        <div class="row">
+            <?php
+            $query = "SELECT k.*, u.Username FROM kepek k LEFT JOIN users u ON k.feltolto_id = u.id";
+            $stmt = $conn->prepare($query);
+            $stmt->execute();
+            while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            ?>
+                <div class="col-md-4 mb-4">
+                    <div class="card">
+                        <?php if (!empty($row['KepURL'])): ?>
+                            <img src="<?php echo htmlspecialchars($row['KepURL']); ?>" class="card-img-top" alt="Galéria kép" style="max-height: 200px; object-fit: cover;">
+                        <?php endif; ?>
+                        <div class="card-body">
+                            <h5 class="card-title">Feltöltő: <?php echo htmlspecialchars($row['Username'] ?? 'Ismeretlen'); ?></h5>
+                            <p class="card-text">Dátum: <?php echo htmlspecialchars($row['Datum']); ?></p>
+                        </div>
+                    </div>
+                </div>
+            <?php
+            }
+            ?>
+        </div>
     </div>
 
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-bottom">
@@ -70,7 +100,7 @@ session_start();
         </div>
     </nav>
 
-    <script src="script.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>

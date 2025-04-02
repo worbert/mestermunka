@@ -113,3 +113,20 @@ body {
 .hidden {
     display: none;
 }
+
+.card {
+    transition: transform 0.2s;
+}
+
+.card:hover {
+    transform: scale(1.05);
+}
+
+.btn {
+    width: 100%;
+}
+
+.card-img-top {
+    max-height: 200px;
+    object-fit: cover;
+}

@@ -29,21 +29,20 @@ session_start();
                     <li class="nav-item"><a class="nav-link" href="galeria.php">Galéria</a></li>
                 </ul>
                 <ul class="navbar-nav ms-auto">
-                    <?php if (isset($_SESSION["username"])): ?>
-                        <li class="nav-item">
-                            <span class="nav-link">Üdv, <?php echo htmlspecialchars($_SESSION["username"]); ?>!</span>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="profil.php">Profilom</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="logout.php">Kijelentkezés</a>
-                        </li>
-                    <?php else: ?>
-                        <li class="nav-item">
+                    <li class="nav-item dropdown">
+                        <?php if (isset($_SESSION["username"])): ?>
+                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Üdv, <?php echo htmlspecialchars($_SESSION["username"]); ?>!
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                            <li><a class="dropdown-item" href="profil.php">Profilom</a></li>
+                            <li><a class="dropdown-item" href="admin.php">Admin</a></li>
+                            <li><a class="dropdown-item" href="logout.php">Kijelentkezés</a></li>
+                        </ul>
+                        <?php else: ?>
                             <a class="nav-link" href="bejelentkezes.php">Bejelentkezés</a>
-                        </li>
-                    <?php endif; ?>
+                        <?php endif; ?>
+                    </li>
                 </ul>
             </div>
         </div>
