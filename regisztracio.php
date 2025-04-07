@@ -1,13 +1,13 @@
 <?php
 session_start();
 
-// Ha már be van jelentkezve, átirányít
+
 if (isset($_SESSION["user_id"])) {
     header("Location: index.php");
     exit;
 }
 
-// Adatbázis kapcsolat
+
 $host = "localhost";
 $dbname = "yamahasok";
 $username = "root";

@@ -1,13 +1,13 @@
 <?php
 session_start();
 
-// Role-based ellenőrzés
+
 if (!isset($_SESSION['username']) || !isset($_SESSION['role']) || $_SESSION['role'] != 1) {
     header('Location: index.php');
     exit;
 }
 
-// Adatbázis kapcsolat localhosttal
+
 $host = "localhost";
 $dbname = "yamahasok";
 $username = "root";
@@ -20,7 +20,7 @@ try {
     die("Kapcsolódási hiba: " . $e->getMessage());
 }
 
-// Esemény törlése
+
 if (isset($_POST['deleteEvent'])) {
     $eventId = $_POST['eventId'];
     $deleteQuery = "DELETE FROM esemenyek WHERE id = :eventId";
@@ -30,7 +30,7 @@ if (isset($_POST['deleteEvent'])) {
     exit;
 }
 
-// Esemény szerkesztése mentése
+
 if (isset($_POST['updateEvent'])) {
     $eventId = $_POST['eventId'];
     $location = $_POST['eventLocation'];
@@ -44,20 +44,20 @@ if (isset($_POST['updateEvent'])) {
     exit;
 }
 
-// Galéria kép feltöltése
+
 if (isset($_POST['uploadImage'])) {
     $imageUrl = $_POST['imageUrl'];
-    $date = date('Y-m-d'); // Aktuális dátum
-    $uploaderId = isset($_SESSION['id']) ? $_SESSION['id'] : 1; // Ha nincs ID, használjuk az 1-et
+    $date = date('Y-m-d');
+    $uploaderId = isset($_SESSION['id']) ? $_SESSION['id'] : 1;
 
-    $query = "INSERT INTO kepek (feltolto_id, Datum, KepURL) VALUES (:uploaderId, :date, :imageUrl)";
+    $query = "INSERT INTO kepek (feltolto_id, Datum, KepURL, approved) VALUES (:uploaderId, :date, :imageUrl, 0)";
     $stmt = $conn->prepare($query);
     $stmt->execute(['uploaderId' => $uploaderId, 'date' => $date, 'imageUrl' => $imageUrl]);
     header("Location: admin.php?msg=Kép+feltöltve!");
     exit;
 }
 
-// Galéria kép törlése
+
 if (isset($_POST['deleteImage'])) {
     $imageId = $_POST['imageId'];
     $deleteQuery = "DELETE FROM kepek WHERE id = :imageId";
@@ -67,7 +67,7 @@ if (isset($_POST['deleteImage'])) {
     exit;
 }
 
-// Galéria kép szerkesztése mentése
+
 if (isset($_POST['updateImage'])) {
     $imageId = $_POST['imageId'];
     $imageUrl = $_POST['imageUrl'];
@@ -76,6 +76,16 @@ if (isset($_POST['updateImage'])) {
     $stmt = $conn->prepare($updateQuery);
     $stmt->execute(['imageUrl' => $imageUrl, 'imageId' => $imageId]);
     header("Location: admin.php?msg=Kép+frissítve!");
+    exit;
+}
+
+
+if (isset($_POST['approveImage'])) {
+    $imageId = $_POST['imageId'];
+    $approveQuery = "UPDATE kepek SET approved = 1 WHERE id = :imageId";
+    $stmt = $conn->prepare($approveQuery);
+    $stmt->execute(['imageId' => $imageId]);
+    header("Location: admin.php?msg=Kép+jóváhagyva!");
     exit;
 }
 ?>
@@ -95,15 +105,34 @@ if (isset($_POST['updateImage'])) {
     </style>
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
         <div class="container-fluid">
             <a class="navbar-brand" href="index.php">Főoldal</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <div class="navbar-nav ms-auto">
+                    <div class="nav-item dropdown">
+                        <?php if (isset($_SESSION["username"])): ?>
+                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Üdv, <?php echo htmlspecialchars($_SESSION["username"]); ?>!
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                                <li><a class="dropdown-item" href="profile.php">Profilom</a></li>
+                                <li><a class="dropdown-item" href="admin.php">Admin</a></li>
+                                <li><a class="dropdown-item" href="logout.php">Kijelentkezés</a></li>
+                            </ul>
+                        <?php else: ?>
+                            <a class="nav-link" href="bejelentkezes.php">Bejelentkezés</a>
+                        <?php endif; ?>
+                    </div>
+                </div>
+            </div>
         </div>
-
-        
     </nav>
 
-    <div class="container mt-4">
+    <div class="container mt-5 pt-5">
         <h1>Adminisztrációs felület</h1>
 
         <section>
@@ -230,9 +259,16 @@ if (isset($_POST['updateImage'])) {
                         $imageStmt->execute();
                         while ($image = $imageStmt->fetch(PDO::FETCH_ASSOC)) {
                             $kep = $image['KepURL'] ? "<img src='{$image['KepURL']}' style='max-width: 100px;'>" : "Nincs kép";
+                            $status = $image['approved'] ? "Jóváhagyva" : "Jóváhagyásra vár";
                             echo "<li class='mb-2'>";
-                            echo "Feltöltő: {$image['Username']} - Dátum: {$image['Datum']} - $kep";
+                            echo "Feltöltő: {$image['Username']} - Dátum: {$image['Datum']} - $kep - Állapot: $status";
                             echo "<div class='image-actions'>";
+                            if (!$image['approved']) {
+                                echo "<form method='POST' action=''>";
+                                echo "<input type='hidden' name='imageId' value='{$image['id']}'>";
+                                echo "<button type='submit' name='approveImage' class='btn btn-success btn-sm'>Jóváhagyás</button>";
+                                echo "</form>";
+                            }
                             echo "<form method='POST' action='' onsubmit='return confirm(\"Biztosan törlöd?\");'>";
                             echo "<input type='hidden' name='imageId' value='{$image['id']}'>";
                             echo "<button type='submit' name='deleteImage' class='btn btn-danger btn-sm'>Törlés</button>";

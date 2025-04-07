@@ -64,45 +64,48 @@ foreach ($images as $key => $path) {
     </nav>
 
     <div class="container mt-5 pt-5 position-relative" style="max-width: 1000px;">
-        <div id="imageCarousel" class="carousel slide" data-bs-ride="carousel">
-            <div class="carousel-inner" style="height: 60vh;">
-                <div class="carousel-item active">
-                    <a href="rolunk.php">
-                        <img src="<?php echo htmlspecialchars($images['rolunk_img']); ?>" class="d-block w-100" style="height: 100%; object-fit: cover;" alt="Kép 1">
-                    </a>
-                </div>
-                <div class="carousel-item">
-                    <img src="<?php echo htmlspecialchars($images['kakucs2024']); ?>" class="d-block w-100" style="height: 100%; object-fit: cover;" alt="Kép 2">
-                </div>
-                <div class="carousel-item">
-                    <img src="<?php echo htmlspecialchars($images['piknik202404']); ?>" class="d-block w-100" style="height: 100%; object-fit: cover;" alt="Kép 3">
-                </div>
+    <div id="imageCarousel" class="carousel slide" data-bs-ride="carousel">
+        <div class="carousel-inner" style="height: 50vh;">
+            <div class="carousel-item active">
+                <a href="rolunk.php">
+                    <img src="<?php echo htmlspecialchars($images['rolunk_img']); ?>" class="d-block w-100" style="height: 100%; object-fit: cover; object-position: center;" alt="Kép 1">
+                </a>
             </div>
-            <button class="carousel-control-prev" type="button" data-bs-target="#imageCarousel" data-bs-slide="prev" style="top: 50%; transform: translateY(-50%);">
-                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                <span class="visually-hidden">Előző</span>
-            </button>
-            <button class="carousel-control-next" type="button" data-bs-target="#imageCarousel" data-bs-slide="next" style="top: 50%; transform: translateY(-50%);">
-                <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                <span class="visually-hidden">Következő</span>
-            </button>
+            <div class="carousel-item">
+                <img src="<?php echo htmlspecialchars($images['kakucs2024']); ?>" class="d-block w-100" style="height: 100%; object-fit: cover; object-position: center;" alt="Kép 2">
+            </div>
+            <div class="carousel-item">
+                <img src="<?php echo htmlspecialchars($images['piknik202404']); ?>" class="d-block w-100" style="height: 100%; object-fit: cover; object-position: center;" alt="Kép 3">
+            </div>
         </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#imageCarousel" data-bs-slide="prev" style="top: 50%; transform: translateY(-50%);">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Előző</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#imageCarousel" data-bs-slide="next" style="top: 50%; transform: translateY(-50%);">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Következő</span>
+        </button>
     </div>
+</div>
 
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-bottom">
-        <div class="container-fluid d-flex justify-content-start align-items-start">
-            <a class="text-white me-3" href="adatvédelmi nyilatkozat.pdf">Adatvédelmi nyilatkozat</a>
+<nav class="navbar navbar-dark bg-primary fixed-bottom custom-navbar">
+    <div class="container-fluid d-flex justify-content-between align-items-center">
+        <div class="d-flex justify-content-start">
+            <a class="text-white me-3 text-size" href="adatvédelmi nyilatkozat.pdf">Adatvédelmi nyilatkozat</a>
         </div>
-        <div class="container-fluid d-flex justify-content-center align-items-center">
-            <span class="text-white me-3">Elérhetőségek:</span>
+        <div class="d-flex justify-content-center align-items-center">
+            <span class="text-white me-3 text-size">Elérhetőségek:</span>
             <a href="https://www.facebook.com/groups/662406200502336" target="_blank" rel="noopener noreferrer" class="text-white me-3">
-                <i class="bi bi-facebook" style="font-size: 1.5rem;"></i>
+                <i class="bi bi-facebook icon-size"></i>
             </a>
-            <a href="mailto:yamahasok@gmail.com" target="_blank" rel="noopener noreferrer" class="text-white">
-                <i class="bi bi-envelope-fill" style="font-size: 1.5rem;"></i>
+            <a href="https://mail.google.com/mail/u/0/?view=cm&fs=1&to=yamahasok@gmail.com" target="_blank" rel="noopener noreferrer" class="text-white">
+                <i class="bi bi-envelope-fill icon-size"></i>
             </a>
         </div>
-    </nav>
+        <div class="d-flex justify-content-end" style="width: 150px;"></div>
+    </div>
+</nav>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <?php if (file_exists('auth.js')): ?>

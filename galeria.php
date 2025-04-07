@@ -1,7 +1,7 @@
 <?php
 session_start();
 
-// Adatbázis kapcsolat localhosttal
+
 $host = "localhost";
 $dbname = "yamahasok";
 $username = "root";
@@ -12,6 +12,24 @@ try {
     $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 } catch (PDOException $e) {
     die("Kapcsolódási hiba: " . $e->getMessage());
+}
+
+
+if (isset($_POST['uploadImage']) && isset($_SESSION['user_id'])) {
+    try {
+        $imageUrl = $_POST['imageUrl'];
+        $date = date('Y-m-d');
+        $uploaderId = $_SESSION['user_id']; 
+
+        $query = "INSERT INTO kepek (feltolto_id, Datum, KepURL, approved) VALUES (:uploaderId, :date, :imageUrl, 0)";
+        $stmt = $conn->prepare($query);
+        $stmt->execute(['uploaderId' => $uploaderId, 'date' => $date, 'imageUrl' => $imageUrl]);
+        $message = "Kép feltöltve, admin jóváhagyásra vár!";
+    } catch (PDOException $e) {
+        $message = "Hiba a kép feltöltése közben: " . $e->getMessage();
+    }
+} elseif (isset($_POST['uploadImage']) && !isset($_SESSION['user_id'])) {
+    $message = "Hiba: Nincs bejelentkezett felhasználó!";
 }
 ?>
 
@@ -43,30 +61,48 @@ try {
                     <li class="nav-item"><a class="nav-link active" href="galeria.php">Galéria</a></li>
                 </ul>
                 <ul class="navbar-nav ms-auto">
-                    <li class="nav-item dropdown">
-                        <?php if (isset($_SESSION["username"])): ?>
-                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            Üdv, <?php echo htmlspecialchars($_SESSION["username"]); ?>!
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                            <li><a class="dropdown-item" href="profil.php">Profilom</a></li>
-                            <li><a class="dropdown-item" href="admin.php">Admin</a></li>
-                            <li><a class="dropdown-item" href="logout.php">Kijelentkezés</a></li>
-                        </ul>
-                        <?php else: ?>
-                            <a class="nav-link" href="bejelentkezes.php">Bejelentkezés</a>
-                        <?php endif; ?>
-                    </li>
-                </ul>
+                <li class="nav-item dropdown">
+                    <?php if (isset($_SESSION["username"])): ?>
+                    <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Üdv, <?php echo htmlspecialchars($_SESSION["username"]); ?>!
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                        <li><a class="dropdown-item" href="profile.php">Profilom</a></li>
+                        <li><a class="dropdown-item" href="admin.php">Admin</a></li>
+                        <li><a class="dropdown-item" href="logout.php">Kijelentkezés</a></li>
+                    </ul>
+                    <?php else: ?>
+                        <a class="nav-link" href="bejelentkezes.php">Bejelentkezés</a>
+                    <?php endif; ?>
+                </li>
+            </ul>
             </div>
         </div>
     </nav>
 
     <div class="container mt-5 pt-5" id="galeria">
         <center><h2>Galéria</h2></center>
+
+        <?php if (isset($message)): ?>
+            <div class="alert <?php echo strpos($message, 'Hiba') === false ? 'alert-success' : 'alert-danger'; ?>">
+                <?php echo $message; ?>
+            </div>
+        <?php endif; ?>
+
+        
+        <?php if (isset($_SESSION["username"])): ?>
+            <h3>Kép feltöltése</h3>
+            <form method="POST" action="galeria.php" class="mb-4">
+                <div class="mb-3">
+                    <input type="url" id="imageUrl" name="imageUrl" class="form-control" placeholder="Kép URL (pl. https://example.com/kep.jpg)" required>
+                </div>
+                <button type="submit" name="uploadImage" class="btn btn-primary">Feltöltés</button>
+            </form>
+        <?php endif; ?>
+
         <div class="row">
             <?php
-            $query = "SELECT k.*, u.Username FROM kepek k LEFT JOIN users u ON k.feltolto_id = u.id";
+            $query = "SELECT k.*, u.Username FROM kepek k LEFT JOIN users u ON k.feltolto_id = u.id WHERE k.approved = 1";
             $stmt = $conn->prepare($query);
             $stmt->execute();
             while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
@@ -88,17 +124,23 @@ try {
         </div>
     </div>
 
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-bottom">
-        <div class="container-fluid d-flex justify-content-center align-items-center">
-            <span class="text-white me-3">Elérhetőségek:</span>
-            <a href="https://www.facebook.com/groups/662406200502336" target="_blank" class="text-white me-3">
-                <i class="bi bi-facebook" style="font-size: 1.5rem;"></i>
+    <nav class="navbar navbar-dark bg-primary fixed-bottom custom-navbar">
+    <div class="container-fluid d-flex justify-content-between align-items-center">
+        <div class="d-flex justify-content-start">
+            <a class="text-white me-3 text-size" href="adatvédelmi nyilatkozat.pdf">Adatvédelmi nyilatkozat</a>
+        </div>
+        <div class="d-flex justify-content-center align-items-center">
+            <span class="text-white me-3 text-size">Elérhetőségek:</span>
+            <a href="https://www.facebook.com/groups/662406200502336" target="_blank" rel="noopener noreferrer" class="text-white me-3">
+                <i class="bi bi-facebook icon-size"></i>
             </a>
-            <a href="mailto:yamahasok@gmail.com" target="_blank" class="text-white">
-                <i class="bi bi-envelope-fill" style="font-size: 1.5rem;"></i>
+            <a href="https://mail.google.com/mail/u/0/?view=cm&fs=1&to=yamahasok@gmail.com" target="_blank" rel="noopener noreferrer" class="text-white">
+                <i class="bi bi-envelope-fill icon-size"></i>
             </a>
         </div>
-    </nav>
+        <div class="d-flex justify-content-end" style="width: 150px;"></div>
+    </div>
+</nav>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="script.js"></script>

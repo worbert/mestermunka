@@ -1,7 +1,7 @@
 <?php
 session_start();
 
-// Adatbázis kapcsolat localhosttal
+
 $host = "localhost";
 $dbname = "yamahasok";
 $username = "root";
@@ -14,7 +14,7 @@ try {
     die("Kapcsolódási hiba: " . $e->getMessage());
 }
 
-// Jelentkezés kezelése
+
 if (isset($_POST['register']) && isset($_SESSION['username'])) {
     $eventId = $_POST['eventId'];
     $userQuery = "SELECT id FROM users WHERE Username = :username";
@@ -37,7 +37,7 @@ if (isset($_POST['register']) && isset($_SESSION['username'])) {
     exit;
 }
 
-// Lemondás kezelése
+
 if (isset($_POST['unregister']) && isset($_SESSION['username'])) {
     $eventId = $_POST['eventId'];
     $userQuery = "SELECT id FROM users WHERE Username = :username";
@@ -61,6 +61,7 @@ if (isset($_POST['unregister']) && isset($_SESSION['username'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Yamahások - Események</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <link rel="stylesheet" href="style.css">
 </head>
@@ -81,21 +82,21 @@ if (isset($_POST['unregister']) && isset($_SESSION['username'])) {
                     <li class="nav-item"><a class="nav-link" href="galeria.php">Galéria</a></li>
                 </ul>
                 <ul class="navbar-nav ms-auto">
-                    <li class="nav-item dropdown">
-                        <?php if (isset($_SESSION["username"])): ?>
-                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            Üdv, <?php echo htmlspecialchars($_SESSION["username"]); ?>!
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                            <li><a class="dropdown-item" href="profil.php">Profilom</a></li>
-                            <li><a class="dropdown-item" href="admin.php">Admin</a></li>
-                            <li><a class="dropdown-item" href="logout.php">Kijelentkezés</a></li>
-                        </ul>
-                        <?php else: ?>
-                            <a class="nav-link" href="bejelentkezes.php">Bejelentkezés</a>
-                        <?php endif; ?>
-                    </li>
-                </ul>
+                <li class="nav-item dropdown">
+                    <?php if (isset($_SESSION["username"])): ?>
+                    <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Üdv, <?php echo htmlspecialchars($_SESSION["username"]); ?>!
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                        <li><a class="dropdown-item" href="profile.php">Profilom</a></li>
+                        <li><a class="dropdown-item" href="admin.php">Admin</a></li>
+                        <li><a class="dropdown-item" href="logout.php">Kijelentkezés</a></li>
+                    </ul>
+                    <?php else: ?>
+                        <a class="nav-link" href="bejelentkezes.php">Bejelentkezés</a>
+                    <?php endif; ?>
+                </li>
+            </ul>
             </div>
         </div>
     </nav>
@@ -156,6 +157,24 @@ if (isset($_POST['unregister']) && isset($_SESSION['username'])) {
             <?php endif; ?>
         </div>
     </div>
+
+    <nav class="navbar navbar-dark bg-primary fixed-bottom custom-navbar">
+    <div class="container-fluid d-flex justify-content-between align-items-center">
+        <div class="d-flex justify-content-start">
+            <a class="text-white me-3 text-size" href="adatvédelmi nyilatkozat.pdf">Adatvédelmi nyilatkozat</a>
+        </div>
+        <div class="d-flex justify-content-center align-items-center">
+            <span class="text-white me-3 text-size">Elérhetőségek:</span>
+            <a href="https://www.facebook.com/groups/662406200502336" target="_blank" rel="noopener noreferrer" class="text-white me-3">
+                <i class="bi bi-facebook icon-size"></i>
+            </a>
+            <a href="https://mail.google.com/mail/u/0/?view=cm&fs=1&to=yamahasok@gmail.com" target="_blank" rel="noopener noreferrer" class="text-white">
+                <i class="bi bi-envelope-fill icon-size"></i>
+            </a>
+        </div>
+        <div class="d-flex justify-content-end" style="width: 150px;"></div>
+    </div>
+</nav>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>

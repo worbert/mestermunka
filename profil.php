@@ -1,30 +1,25 @@
 <?php
 session_start();
 
-// Session naplózás
-error_log("Session tartalma: " . print_r($_SESSION, true));
 
-// Ellenőrizzük, hogy be van-e jelentkezve a felhasználó, és az user_id érvényes-e
-if (!isset($_SESSION["user_id"]) || !is_numeric($_SESSION["user_id"]) || $_SESSION["user_id"] <= 0) {
-    error_log("Session user_id nem található vagy érvénytelen: " . print_r($_SESSION, true));
-    header("Location: http://localhost/bejelentkezes.php");
+if (!isset($_SESSION["user_id"])) {
+    header("Location: bejelentkezes.php");
     exit;
 }
 
-// Adatbázis kapcsolati konstansok
-define("DB_HOST", "localhost");
-define("DB_NAME", "yamahasok");
-define("DB_USER", "root");
-define("DB_PASS", "");
+
+$host = "localhost";
+$dbname = "yamahasok";
+$username = "root";
+$password = "";
 
 try {
-    // PDO kapcsolat létrehozása
-    $pdo = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME . ";charset=utf8mb4", DB_USER, DB_PASS);
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    error_log("Adatbázis kapcsolat sikeres");
     
-    // Felhasználó adatainak lekérdezése
-    $query = $pdo->prepare("SELECT Vnev, Knev, Email, Telefon, profil_kep FROM users WHERE id = :id");
+    $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8mb4", $username, $password);
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    
+    
+    $query = $pdo->prepare("SELECT Vnev, Knev, Email, Telefon, profile_pic FROM users WHERE id = :id");
     $query->execute(["id" => $_SESSION["user_id"]]);
     $user = $query->fetch(PDO::FETCH_ASSOC);
     
@@ -32,36 +27,33 @@ try {
         die("Hiba: Nincs ilyen felhasználó az adatbázisban.");
     }
     
-    // Profilkép URL mentése
-    $errorMessage = $successMessage = "";
-    if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["profil_kep_url"])) {
-        $profilKepUrl = filter_input(INPUT_POST, "profil_kep_url", FILTER_VALIDATE_URL);
+    
+    if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_FILES["profile_pic"])) {
+        $targetDir = "uploads/";
+        if (!file_exists($targetDir)) {
+            mkdir($targetDir, 0777, true);
+        }
         
-        // URL validáció
-        if (!$profilKepUrl) {
-            $errorMessage = "Hiba: Érvénytelen URL formátum. Kérlek, adj meg egy érvényes URL-t (pl. https://example.com/image.jpg).";
-        } else {
-            try {
-                // Profilkép URL mentése az adatbázisba
-                $stmt = $pdo->prepare("UPDATE users SET profil_kep = :profil_kep WHERE id = :id");
-                $stmt->execute(["profil_kep" => $profilKepUrl, "id" => $_SESSION["user_id"]]);
-                error_log("Profilkép URL sikeresen mentve: " . $profilKepUrl);
-                $successMessage = "Profilkép URL sikeresen frissítve!";
-                header("Location: http://localhost/profil.php");
+        $fileName = "profile_" . $_SESSION["user_id"] . "." . strtolower(pathinfo($_FILES["profile_pic"]["name"], PATHINFO_EXTENSION));
+        $targetFilePath = $targetDir . $fileName;
+        
+        $allowedTypes = ["jpg", "jpeg", "png", "gif"];
+        if (in_array(strtolower(pathinfo($fileName, PATHINFO_EXTENSION)), $allowedTypes)) {
+            if (move_uploaded_file($_FILES["profile_pic"]["tmp_name"], $targetFilePath)) {
+                $stmt = $pdo->prepare("UPDATE users SET profile_pic = :profile_pic WHERE id = :id");
+                $stmt->execute(["profile_pic" => $fileName, "id" => $_SESSION["user_id"]]);
+                header("Location: profile.php");
                 exit;
-            } catch (PDOException $e) {
-                error_log("Adatbázis hiba a profilkép URL mentésekor: " . $e->getMessage());
-                $errorMessage = "Hiba: Nem sikerült menteni a profilkép URL-t. Kérlek, próbáld újra.";
+            } else {
+                echo "<p class='text-danger'>Hiba: Nem sikerült feltölteni a fájlt.</p>";
             }
+        } else {
+            echo "<p class='text-danger'>Hiba: Csak JPG, JPEG, PNG és GIF fájlokat tölthetsz fel.</p>";
         }
     }
 } catch (PDOException $e) {
-    error_log("Adatbázis hiba: " . $e->getMessage());
     die("Adatbázis hiba: " . $e->getMessage());
 }
-
-// Alapértelmezett profilkép kezelése
-$profilePic = $user['profil_kep'] ? $user['profil_kep'] : 'https://via.placeholder.com/150?text=Nincs+kép';
 ?>
 
 <!DOCTYPE html>
@@ -74,41 +66,51 @@ $profilePic = $user['profil_kep'] ? $user['profil_kep'] : 'https://via.placehold
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <nav class="navbar navbar-dark bg-primary">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
         <div class="container-fluid">
-            <a class="navbar-brand" href="index.php">Vissza a Főoldalra</a>
-            <?php if (isset($_SESSION["username"])): ?>
-                <span class="navbar-text text-white me-3">
-                    Üdv, <?php echo htmlspecialchars($_SESSION["username"]); ?>!
-                </span>
-            <?php endif; ?>
+            <a class="navbar-brand" href="index.php">Főoldal</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <div class="navbar-nav ms-auto">
+                    <div class="nav-item dropdown">
+                        <?php if (isset($_SESSION["username"])): ?>
+                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Üdv, <?php echo htmlspecialchars($_SESSION["username"]); ?>!
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                                <li><a class="dropdown-item" href="profile.php">Profilom</a></li>
+                                <?php if (isset($_SESSION['role']) && $_SESSION['role'] == 1): ?>
+                                    <li><a class="dropdown-item" href="admin.php">Admin</a></li>
+                                <?php endif; ?>
+                                <li><a class="dropdown-item" href="logout.php">Kijelentkezés</a></li>
+                            </ul>
+                        <?php else: ?>
+                            <a class="nav-link" href="bejelentkezes.php">Bejelentkezés</a>
+                        <?php endif; ?>
+                    </div>
+                </div>
+            </div>
         </div>
     </nav>
 
-    <div class="container mt-5">
+    <div class="container mt-5 pt-5">
         <h2 class="mb-4">Profilom</h2>
         <div class="card">
             <div class="card-body text-center">
                 <div class="mb-3">
-                    <img src="<?php echo htmlspecialchars($profilePic); ?>" alt="Profilkép" class="rounded-circle img-fluid" width="150" height="150">
+                    <img src="uploads/<?php echo htmlspecialchars($user['profile_pic'] ?? 'default.png'); ?>" alt="Profilkép" class="rounded-circle" width="150" height="150">
                 </div>
-                <form action="/profil.php" method="POST">
-                    <div class="mb-3">
-                        <input type="url" name="profil_kep_url" class="form-control" placeholder="Profilkép URL (pl. https://example.com/image.jpg)" required>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Profilkép URL mentése</button>
+                <form action="profile.php" method="POST" enctype="multipart/form-data">
+                    <input type="file" name="profile_pic" class="form-control mb-3" accept="image/*" required>
+                    <button type="submit" class="btn btn-primary">Profilkép feltöltése</button>
                 </form>
-                <?php if ($errorMessage): ?>
-                    <p class="text-danger mt-3"><?php echo $errorMessage; ?></p>
-                <?php endif; ?>
-                <?php if ($successMessage): ?>
-                    <p class="text-success mt-3"><?php echo $successMessage; ?></p>
-                <?php endif; ?>
                 <hr>
                 <p><strong>Név:</strong> <?php echo htmlspecialchars($user["Vnev"] . " " . $user["Knev"]); ?></p>
                 <p><strong>Email:</strong> <?php echo htmlspecialchars($user["Email"]); ?></p>
                 <p><strong>Telefonszám:</strong> <?php echo htmlspecialchars($user["Telefon"]); ?></p>
-                <button class="btn btn-danger" onclick="if(confirm('Biztosan ki szeretnél jelentkezni?')) window.location.href='logout.php'">Kijelentkezés</button>
+                <button class="btn btn-danger" onclick="window.location.href='logout.php'">Kijelentkezés</button>
             </div>
         </div>
     </div>
