@@ -1,12 +1,10 @@
 <?php
 session_start();
 
-
 if (!isset($_SESSION['username']) || !isset($_SESSION['role']) || $_SESSION['role'] != 1) {
     header('Location: index.php');
     exit;
 }
-
 
 $host = "localhost";
 $dbname = "yamahasok";
@@ -20,7 +18,6 @@ try {
     die("Kapcsolódási hiba: " . $e->getMessage());
 }
 
-
 if (isset($_POST['deleteEvent'])) {
     $eventId = $_POST['eventId'];
     $deleteQuery = "DELETE FROM esemenyek WHERE id = :eventId";
@@ -29,7 +26,6 @@ if (isset($_POST['deleteEvent'])) {
     header("Location: admin.php?msg=Esemény+törölve!");
     exit;
 }
-
 
 if (isset($_POST['updateEvent'])) {
     $eventId = $_POST['eventId'];
@@ -44,7 +40,6 @@ if (isset($_POST['updateEvent'])) {
     exit;
 }
 
-
 if (isset($_POST['uploadImage'])) {
     $imageUrl = $_POST['imageUrl'];
     $date = date('Y-m-d');
@@ -57,7 +52,6 @@ if (isset($_POST['uploadImage'])) {
     exit;
 }
 
-
 if (isset($_POST['deleteImage'])) {
     $imageId = $_POST['imageId'];
     $deleteQuery = "DELETE FROM kepek WHERE id = :imageId";
@@ -66,7 +60,6 @@ if (isset($_POST['deleteImage'])) {
     header("Location: admin.php?msg=Kép+törölve!");
     exit;
 }
-
 
 if (isset($_POST['updateImage'])) {
     $imageId = $_POST['imageId'];
@@ -78,7 +71,6 @@ if (isset($_POST['updateImage'])) {
     header("Location: admin.php?msg=Kép+frissítve!");
     exit;
 }
-
 
 if (isset($_POST['approveImage'])) {
     $imageId = $_POST['imageId'];
@@ -95,19 +87,201 @@ if (isset($_POST['approveImage'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-    <link rel="stylesheet" href="admin.css">
+    <title>Admin - Yamahások</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
     <style>
-        .event-actions, .image-actions { display: flex; gap: 10px; }
-        .edit-form { margin-top: 20px; padding: 15px; border: 1px solid #ccc; }
-        .user-list, .gallery-list { margin-top: 20px; }
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Montserrat', sans-serif;
+            background-color: #1a1a1a;
+            color: #fff;
+            overflow-x: hidden;
+        }
+
+        .navbar-top {
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            padding: 15px 30px;
+            transition: background 0.3s ease;
+        }
+        .navbar-top.scrolled {
+            background: #000;
+            
+        }
+        .navbar-brand img {
+            width: 100px;
+            height: 70px;
+            transition: transform 0.3s ease;
+        }
+        .navbar-brand img:hover {
+            transform: rotate(5deg);
+        }
+        .navbar-nav .nav-link {
+            font-weight: 600;
+            color: #fff;
+            margin: 0 15px;
+            position: relative;
+            transition: color 0.3s ease;
+        }
+        .navbar-nav .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            background: #ff0000;
+            bottom: -5px;
+            left: 0;
+            transition: width 0.3s ease;
+        }
+        .navbar-nav .nav-link:hover::after {
+            width: 100%;
+            
+        
+        }
+        .navbar-nav .nav-link:hover {
+            color: #ff0000;
+            
+        }
+
+        .container {
+            padding-top: 120px;
+            padding-bottom: 50px;
+            
+            
+        }
+        h1, h2, h3 {
+            color: #ff0000;
+            text-transform: uppercase;
+            animation: fadeInDown 1s ease;
+        }
+        .btn-primary {
+            background-color: #ff0000;
+            border-color: #ff0000;
+            transition: background-color 0.3s ease;
+            
+        }
+        .btn-primary:hover {
+            background-color: #e60000;
+            border-color: #e60000;
+        }
+        .btn-danger, .btn-warning, .btn-success {
+            transition: transform 0.3s ease;
+        }
+        .btn-danger:hover, .btn-warning:hover, .btn-success:hover {
+            transform: scale(1.05);
+        }
+        .card {
+            background: #2a2a2a;
+            border: none;
+            transition: transform 0.3s ease;
+            color: #fff;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            
+        }
+        .form-control {
+            background: #333;
+            color: #fff;
+            border: 1px solid #555;
+        }
+        .form-control:focus {
+            background: #333;
+            color: #fff;
+            border-color: #ff0000;
+            box-shadow: none;
+        }
+        .alert-success {
+            background: #28a745;
+            color: #fff;
+        }
+        .alert-danger {
+            background: #dc3545;
+            color: #fff;
+        }
+        .event-actions, .image-actions {
+            display: flex;
+            gap: 10px;
+        }
+        .edit-form {
+            margin-top: 20px;
+            padding: 15px;
+            border: 1px solid #555;
+            background: #2a2a2a;
+            color: #fff;
+        }
+        .user-list, .gallery-list {
+            margin-top: 20px;
+            color: #fff;
+        }
+
+        .navbar-bottom {
+            background: #000;
+            padding: 20px 30px;
+            position: relative;
+            overflow: hidden;
+        }
+        .navbar-bottom::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('https://www.transparenttextures.com/patterns/asfalt-dark.png');
+            opacity: 0.2;
+        }
+        .navbar-bottom .navbar-text a {
+            color: #fff;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+        .navbar-bottom .navbar-text a:hover {
+            color: #ff0000;
+        }
+        .navbar-bottom .navbar-text i {
+            font-size: 2rem;
+            margin: 0 10px;
+            transition: transform 0.3s ease, color 0.3s ease;
+        }
+        .navbar-bottom .navbar-text i:hover {
+            transform: scale(1.2);
+            color: #ff0000;
+        }
+
+        .form-control {
+    background: #333;
+    color: #e0e0e0; 
+    border: 1px solid #555;
+}
+
+
+.form-control::placeholder {
+    color: #b0b0b0; 
+    opacity: 1; 
+}
+
+
+.form-control:focus {
+    background: #333;
+    color: #e0e0e0;
+    border-color: #ff0000;
+    box-shadow: none;
+}
+
+
     </style>
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top navbar-top">
         <div class="container-fluid">
-            <a class="navbar-brand" href="index.php">Főoldal</a>
+            <a class="navbar-brand d-flex align-items-center" href="index.php">
+                <img src="img/yamahasok_logo.jpg" alt="Logo">
+            </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -132,8 +306,8 @@ if (isset($_POST['approveImage'])) {
         </div>
     </nav>
 
-    <div class="container mt-5 pt-5">
-        <h1>Adminisztrációs felület</h1>
+    <div class="container">
+        <h1 class="text-center">Adminisztrációs felület</h1>
 
         <section>
             <h2>Események kezelése</h2>
@@ -145,9 +319,9 @@ if (isset($_POST['approveImage'])) {
                 $stmt->execute();
                 while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
                     $kep = $row['KepURL'] ? "<img src='{$row['KepURL']}' style='max-width: 100px;'>" : "Nincs kép";
-                    echo "<li class='mb-2'>";
+                    echo "<li class='mb-2 card p-3'>";
                     echo "{$row['Helyszin']} - {$row['Idopont']} - $kep";
-                    echo "<div class='event-actions'>";
+                    echo "<div class='event-actions mt-2'>";
                     echo "<form method='POST' action='' onsubmit='return confirm(\"Biztosan törlöd?\");'>";
                     echo "<input type='hidden' name='eventId' value='{$row['id']}'>";
                     echo "<button type='submit' name='deleteEvent' class='btn btn-danger btn-sm'>Törlés</button>";
@@ -230,7 +404,7 @@ if (isset($_POST['approveImage'])) {
                         $userStmt->execute();
                         while ($user = $userStmt->fetch(PDO::FETCH_ASSOC)) {
                             $roleText = $user['Role'] == 1 ? "Admin" : "Felhasználó";
-                            echo "<li>{$user['Username']} - {$user['Email']} - Szerepkör: $roleText</li>";
+                            echo "<li class='card p-3 mb-2'>{$user['Username']} - {$user['Email']} - Szerepkör: $roleText</li>";
                         }
                         ?>
                     </ul>
@@ -260,9 +434,9 @@ if (isset($_POST['approveImage'])) {
                         while ($image = $imageStmt->fetch(PDO::FETCH_ASSOC)) {
                             $kep = $image['KepURL'] ? "<img src='{$image['KepURL']}' style='max-width: 100px;'>" : "Nincs kép";
                             $status = $image['approved'] ? "Jóváhagyva" : "Jóváhagyásra vár";
-                            echo "<li class='mb-2'>";
+                            echo "<li class='card p-3 mb-2'>";
                             echo "Feltöltő: {$image['Username']} - Dátum: {$image['Datum']} - $kep - Állapot: $status";
-                            echo "<div class='image-actions'>";
+                            echo "<div class='image-actions mt-2'>";
                             if (!$image['approved']) {
                                 echo "<form method='POST' action=''>";
                                 echo "<input type='hidden' name='imageId' value='{$image['id']}'>";
@@ -311,7 +485,33 @@ if (isset($_POST['approveImage'])) {
         </section>
     </div>
 
+    <nav class="navbar navbar-black bg-black fixed-bottom custom-navbar">
+    <div class="container-fluid d-flex justify-content-between align-items-center">
+        <div class="d-flex justify-content-start">
+            <a class="text-white me-3 text-size" href="adatvédelmi nyilatkozat.pdf">Adatvédelmi nyilatkozat</a>
+        </div>
+        <div class="d-flex justify-content-center align-items-center">
+            <span class="text-white me-3 text-size">Elérhetőségek:</span>
+            <a href="https://www.facebook.com/groups/662406200502336" target="_blank" rel="noopener noreferrer" class="text-white me-3">
+                <i class="bi bi-facebook icon-size"></i>
+            </a>
+            <a href="https://mail.google.com/mail/u/0/?view=cm&fs=1&to=yamahasok@gmail.com" target="_blank" rel="noopener noreferrer" class="text-white">
+                <i class="bi bi-envelope-fill icon-size"></i>
+            </a>
+        </div>
+        <div class="d-flex justify-content-end" style="width: 150px;"></div>
+    </div>
+</nav>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="script.js" defer></script>
+    <script>
+        window.addEventListener('scroll', function() {
+            const navbar = document.querySelector('.navbar-top');
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+    </script>
 </body>
 </html>

@@ -1,33 +1,53 @@
 <?php
 session_start();
 
+if (!isset($_SESSION["user_id"])) {
+    header("Location: bejelentkezes.php");
+    exit;
+}
+
 $host = "localhost";
 $dbname = "yamahasok";
 $username = "root";
 $password = "";
 
 try {
-    $conn = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8mb4", $username, $password);
-    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-} catch (PDOException $e) {
-    die("Kapcsolódási hiba: " . $e->getMessage());
-}
-
-if (isset($_POST['uploadImage']) && isset($_SESSION['user_id'])) {
-    try {
-        $imageUrl = $_POST['imageUrl'];
-        $date = date('Y-m-d');
-        $uploaderId = $_SESSION['user_id']; 
-
-        $query = "INSERT INTO kepek (feltolto_id, Datum, KepURL, approved) VALUES (:uploaderId, :date, :imageUrl, 0)";
-        $stmt = $conn->prepare($query);
-        $stmt->execute(['uploaderId' => $uploaderId, 'date' => $date, 'imageUrl' => $imageUrl]);
-        $message = "Kép feltöltve, admin jóváhagyásra vár!";
-    } catch (PDOException $e) {
-        $message = "Hiba a kép feltöltése közben: " . $e->getMessage();
+    $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8mb4", $username, $password);
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    
+    $query = $pdo->prepare("SELECT Vnev, Knev, Email, Telefon, profile_pic FROM users WHERE id = :id");
+    $query->execute(["id" => $_SESSION["user_id"]]);
+    $user = $query->fetch(PDO::FETCH_ASSOC);
+    
+    if (!$user) {
+        die("Hiba: Nincs ilyen felhasználó az adatbázisban.");
     }
-} elseif (isset($_POST['uploadImage']) && !isset($_SESSION['user_id'])) {
-    $message = "Hiba: Nincs bejelentkezett felhasználó!";
+    
+    if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_FILES["profile_pic"])) {
+        $targetDir = "uploads/";
+        if (!file_exists($targetDir)) {
+            mkdir($targetDir, 0777, true);
+        }
+        
+        $fileName = "profile_" . $_SESSION["user_id"] . "." . strtolower(pathinfo($_FILES["profile_pic"]["name"], PATHINFO_EXTENSION));
+        $targetFilePath = $targetDir . $fileName;
+        
+        $allowedTypes = ["jpg", "jpeg", "png", "gif"];
+        if (in_array(strtolower(pathinfo($fileName, PATHINFO_EXTENSION)), $allowedTypes)) {
+            if (move_uploaded_file($_FILES["profile_pic"]["tmp_name"], $targetFilePath)) {
+                $stmt = $pdo->prepare("UPDATE users SET profile_pic = :profile_pic WHERE id = :id");
+                $stmt->execute(["profile_pic" => $fileName, "id" => $_SESSION["user_id"]]);
+                header("Location: profile.php");
+                exit;
+            } else {
+                echo "<p class='text-danger'>Hiba: Nem sikerült feltölteni a fájlt.</p>";
+            }
+        } else {
+            echo "<p class='text-danger'>Hiba: Csak JPG, JPEG, PNG és GIF fájlokat tölthetsz fel.</p>";
+        }
+    }
+} catch (PDOException $e) {
+    die("Adatbázis hiba: " . $e->getMessage());
 }
 ?>
 
@@ -36,7 +56,7 @@ if (isset($_POST['uploadImage']) && isset($_SESSION['user_id'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Yamahások - Galéria</title>
+    <title>Profilom - Yamahások</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
@@ -95,7 +115,7 @@ if (isset($_POST['uploadImage']) && isset($_SESSION['user_id'])) {
             padding-top: 120px;
             padding-bottom: 50px;
         }
-        h2, h3 {
+        h2 {
             color: #ff0000;
             text-transform: uppercase;
             animation: fadeInDown 1s ease;
@@ -104,22 +124,20 @@ if (isset($_POST['uploadImage']) && isset($_SESSION['user_id'])) {
             background: #2a2a2a;
             border: none;
             transition: transform 0.3s ease;
-            color:#fff;
+            color:white;
         }
         .card:hover {
             transform: translateY(-5px);
         }
-        .card-title {
-            color: #ff0000;
-        }
-        .btn-primary {
+        .btn-primary, .btn-danger {
             background-color: #ff0000;
             border-color: #ff0000;
-            transition: background-color 0.3s ease;
+            transition: background-color 0.3s ease, transform 0.3s ease;
         }
-        .btn-primary:hover {
+        .btn-primary:hover, .btn-danger:hover {
             background-color: #e60000;
             border-color: #e60000;
+            transform: scale(1.05);
         }
         .form-control {
             background: #333;
@@ -132,13 +150,8 @@ if (isset($_POST['uploadImage']) && isset($_SESSION['user_id'])) {
             border-color: #ff0000;
             box-shadow: none;
         }
-        .alert-success {
-            background: #28a745;
-            color: #fff;
-        }
-        .alert-danger {
-            background: #dc3545;
-            color: #fff;
+        .text-danger {
+            color: #ff0000 !important;
         }
 
         .navbar-bottom {
@@ -180,26 +193,18 @@ if (isset($_POST['uploadImage']) && isset($_SESSION['user_id'])) {
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark fixed-top navbar-top">
         <div class="container-fluid">
-            <a class="navbar-brand d-flex align-items-center" href="index.php">
-                <img src="img/yamahasok_logo.jpg" alt="Logo">
-            </a>
+            <a class="navbar-brand" href="index.php">Főoldal</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav">
-                    <li class="nav-item"><a class="nav-link" href="rolunk.php">Rólunk</a></li>
-                    <li class="nav-item"><a class="nav-link" href="alapitonk.php">Alapítónk</a></li>
-                    <li class="nav-item"><a class="nav-link" href="esemenyek.php">Események</a></li>
-                    <li class="nav-item"><a class="nav-link active" href="galeria.php">Galéria</a></li>
-                </ul>
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item dropdown">
+                <div class="navbar-nav ms-auto">
+                    <div class="nav-item dropdown">
                         <?php if (isset($_SESSION["username"])): ?>
-                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            Üdv, <?php echo htmlspecialchars($_SESSION["username"]); ?>!
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Üdv, <?php echo htmlspecialchars($_SESSION["username"]); ?>!
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
                                 <li><a class="dropdown-item" href="profile.php">Profilom</a></li>
                                 <?php if (isset($_SESSION['role']) && $_SESSION['role'] == 1): ?>
                                     <li><a class="dropdown-item" href="admin.php">Admin</a></li>
@@ -209,54 +214,32 @@ if (isset($_POST['uploadImage']) && isset($_SESSION['user_id'])) {
                         <?php else: ?>
                             <a class="nav-link" href="bejelentkezes.php">Bejelentkezés</a>
                         <?php endif; ?>
-                    </li>
-                </ul>
+                    </div>
+                </div>
             </div>
         </div>
     </nav>
 
-    <div class="container" id="galeria">
-        <center><h2>Galéria</h2></center>
-
-        <?php if (isset($message)): ?>
-            <div class="alert <?php echo strpos($message, 'Hiba') === false ? 'alert-success' : 'alert-danger'; ?>">
-                <?php echo $message; ?>
-            </div>
-        <?php endif; ?>
-
-        <?php if (isset($_SESSION["username"])): ?>
-            <h3>Kép feltöltése</h3>
-            <form method="POST" action="galeria.php" class="mb-4">
+    <div class="container">
+        <h2 class="mb-4 text-center">Profilom</h2>
+        <div class="card">
+            <div class="card-body text-center">
                 <div class="mb-3">
-                    <input type="url" id="imageUrl" name="imageUrl" class="form-control" placeholder="Kép URL (pl. https://example.com/kep.jpg)" required>
+                    <img src="uploads/<?php echo htmlspecialchars($user['profile_pic'] ?? 'default.png'); ?>" alt="Profilkép" class="rounded-circle" width="150" height="150">
                 </div>
-                <button type="submit" name="uploadImage" class="btn btn-primary">Feltöltés</button>
-            </form>
-        <?php endif; ?>
-
-        <div class="row">
-            <?php
-            $query = "SELECT k.*, u.Username FROM kepek k LEFT JOIN users u ON k.feltolto_id = u.id WHERE k.approved = 1";
-            $stmt = $conn->prepare($query);
-            $stmt->execute();
-            while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            ?>
-                <div class="col-md-4 mb-4">
-                    <div class="card">
-                        <?php if (!empty($row['KepURL'])): ?>
-                            <img src="<?php echo htmlspecialchars($row['KepURL']); ?>" class="card-img-top" alt="Galéria kép" style="max-height: 200px; object-fit: cover;">
-                        <?php endif; ?>
-                        <div class="card-body">
-                            <h5 class="card-title">Feltöltő: <?php echo htmlspecialchars($row['Username'] ?? 'Ismeretlen'); ?></h5>
-                            <p class="card-text">Dátum: <?php echo htmlspecialchars($row['Datum']); ?></p>
-                        </div>
-                    </div>
-                </div>
-            <?php
-            }
-            ?>
+                <form action="profile.php" method="POST" enctype="multipart/form-data">
+                    <input type="file" name="profile_pic" class="form-control mb-3" accept="image/*" required>
+                    <button type="submit" class="btn btn-primary">Profilkép feltöltése</button>
+                </form>
+                <hr>
+                <p><strong>Név:</strong> <?php echo htmlspecialchars($user["Vnev"] . " " . $user["Knev"]); ?></p>
+                <p><strong>Email:</strong> <?php echo htmlspecialchars($user["Email"]); ?></p>
+                <p><strong>Telefonszám:</strong> <?php echo htmlspecialchars($user["Telefon"]); ?></p>
+                <button class="btn btn-danger" onclick="window.location.href='logout.php'">Kijelentkezés</button>
+            </div>
         </div>
     </div>
+
     <nav class="navbar navbar-black bg-black fixed-bottom custom-navbar">
     <div class="container-fluid d-flex justify-content-between align-items-center">
         <div class="d-flex justify-content-start">
@@ -274,8 +257,7 @@ if (isset($_POST['uploadImage']) && isset($_SESSION['user_id'])) {
         <div class="d-flex justify-content-end" style="width: 150px;"></div>
     </div>
 </nav>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         window.addEventListener('scroll', function() {
             const navbar = document.querySelector('.navbar-top');
