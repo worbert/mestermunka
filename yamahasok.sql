@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Gép: 127.0.0.1
--- Létrehozás ideje: 2025. Ápr 07. 10:23
--- Kiszolgáló verziója: 10.4.28-MariaDB
--- PHP verzió: 8.2.4
+-- Létrehozás ideje: 2025. Ápr 09. 17:21
+-- Kiszolgáló verziója: 10.4.32-MariaDB
+-- PHP verzió: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -53,6 +53,13 @@ CREATE TABLE `esemeny_resztvevok` (
   `felhasznalo_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_hungarian_ci;
 
+--
+-- A tábla adatainak kiíratása `esemeny_resztvevok`
+--
+
+INSERT INTO `esemeny_resztvevok` (`esemeny_id`, `felhasznalo_id`) VALUES
+(4, 1);
+
 -- --------------------------------------------------------
 
 --
@@ -72,9 +79,7 @@ CREATE TABLE `kepek` (
 --
 
 INSERT INTO `kepek` (`id`, `feltolto_id`, `Datum`, `KepURL`, `approved`) VALUES
-(5, 1, '2025-04-02', 'https://th.bing.com/th/id/OIP.oivuIedwoVk4ixPFn7HACwHaEK?rs=1&pid=ImgDetMain', 1),
-(7, 1, '2025-04-07', 'https://th.bing.com/th/id/OIP.7ekt1OgS0vfWkRWpWa4uKAHaFr?w=225&h=180&c=7&r=0&o=5&dpr=1.1&pid=1.7', 1),
-(8, 70, '2025-04-07', 'https://th.bing.com/th?q=Motor+Clip+Art&w=120&h=120&c=1&rs=1&qlt=90&cb=1&dpr=1.1&pid=InlineBlock&mkt=en-WW&cc=HU&setlang=hu&adlt=strict&t=1&mw=247', 1);
+(5, 1, '2025-04-02', 'https://th.bing.com/th/id/OIP.oivuIedwoVk4ixPFn7HACwHaEK?rs=1&pid=ImgDetMain', 0);
 
 -- --------------------------------------------------------
 
@@ -149,7 +154,7 @@ ALTER TABLE `esemenyek`
 -- AUTO_INCREMENT a táblához `kepek`
 --
 ALTER TABLE `kepek`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT a táblához `users`

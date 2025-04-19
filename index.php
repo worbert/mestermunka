@@ -65,70 +65,70 @@ session_start();
 
         /* Carousel */
         .carousel-container {
-            position: relative;
-            height: 100vh;
-            overflow: hidden;
-        }
-        .carousel-inner, .carousel-item {
-            height: 100%;
-            width: 100%;
-        }
-        .carousel-item img {
-            height: 100%;
-            width: 100%;
-            object-fit: cover;
-            object-position: center;
-            filter: brightness(70%);
-            transform: scale(1.1);
-            transition: transform 5s ease;
-        }
-        .carousel-item.active img {
-            transform: scale(1);
-        }
-        .carousel-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background: linear-gradient(to bottom, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.7));
-        }
-        .carousel-overlay h1 {
-            font-size: 4rem;
-            font-weight: 800;
-            text-transform: uppercase;
-            color: #fff;
-            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.7);
-            animation: fadeInDown 1s ease;
-        }
-        .carousel-overlay h1 span {
-            color: #ff0000;
-        }
-        .carousel-control-prev, .carousel-control-next {
-            width: 8%;
-            background: rgba(255, 0, 0, 0.3);
-            transition: background 0.3s ease;
-        }
-        .carousel-control-prev:hover, .carousel-control-next:hover {
-            background: rgba(255, 0, 0, 0.5);
-        }
-        .carousel-control-prev-icon, .carousel-control-next-icon {
-            background-image: none;
-            font-family: 'bootstrap-icons';
-            color: #fff;
-            font-size: 2rem;
-        }
-        .carousel-control-prev-icon::before {
-            content: '\F284'; /* Bootstrap Icons: chevron-left */
-        }
-        .carousel-control-next-icon::before {
-            content: '\F285'; /* Bootstrap Icons: chevron-right */
-        }
+    position: relative;
+    height: 100vh;
+    overflow: hidden;
+}
+.carousel-inner, .carousel-item {
+    height: 100%;
+    width: 100%;
+}
+.carousel-item img {
+    height: 100%;
+    width: 100%;
+    object-fit: cover;
+    object-position: center;
+    filter: brightness(70%);
+    transform: scale(1.1);
+    transition: transform 5s ease;
+}
+.carousel-item.active img {
+    transform: scale(1);
+}
+.carousel-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.7));
+}
+.carousel-overlay h1 {
+    font-size: 4rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    color: #fff;
+    text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.7);
+    animation: fadeInDown 1s ease;
+}
+.carousel-overlay h1 span {
+    color: #ff0000;
+}
+.custom-carousel-control {
+    width: auto; /* Minimális szélesség, csak a nyíl köré */
+    padding: 0 15px; /* Kisméretű padding a nyíl körül */
+    background: none !important; /* Nincs háttérszín */
+    transition: none; /* Nincs háttérátmenet */
+}
+.custom-carousel-control:hover {
+    background: none !important; /* Hover esetén se legyen háttér */
+}
+.carousel-control-prev-icon, .carousel-control-next-icon {
+    background-image: none;
+    font-family: 'bootstrap-icons';
+    color: #fff;
+    font-size: 2rem;
+}
+.carousel-control-prev-icon::before {
+    content: '\F284'; /* Bootstrap Icons: chevron-left */
+}
+.carousel-control-next-icon::before {
+    content: '\F285'; /* Bootstrap Icons: chevron-right */
+}
 
-        /* Footer */
         .navbar-bottom {
             background: #000;
             padding: 20px 30px;
@@ -162,6 +162,9 @@ session_start();
         .navbar-bottom .navbar-text i:hover {
             transform: scale(1.2);
             color: #ff0000;
+        }
+        a {
+    text-decoration: none;
         }
     </style>
 </head>
@@ -215,16 +218,27 @@ session_start();
                 </a>
             </div>
             <div class="carousel-item">
-                <img src="img/kakucs2024.jpg" class="d-block" alt="Kép 2">
+                <img src="img/alapito.jpg" class="d-block" alt="Kép 2">
                 <div class="carousel-overlay">
-                    <h1>Kakucs <span>2024</span></h1>
+                    <h1>Alapitónk <span>Dávid János</span></h1>
                 </div>
             </div>
             <div class="carousel-item">
-                <img src="img/piknik202404.jpg" class="d-block" alt="Kép 3">
-                <div class="carousel-overlay">
-                    <h1>Piknik <span>2024</span></h1>
-                </div>
+                <a href="esemenyek.php">
+                    <img src="img/piknik202404.jpg" class="d-block" alt="Események kép">
+                    <div class="carousel-overlay">
+                        <h1>Esem<span>ények</span></h1>
+                    </div>
+                </a>
+            </div>
+
+            <div class="carousel-item">
+                <a href="galeria.php">
+                    <img src="img/galeria.jpg" class="d-block" alt="Galéria kép">
+                    <div class="carousel-overlay">
+                        <h1>Galé<span>ria</span></h1>
+                    </div>
+                </a>
             </div>
         </div>
         <button class="carousel-control-prev" type="button" data-bs-target="#imageCarousel" data-bs-slide="prev">

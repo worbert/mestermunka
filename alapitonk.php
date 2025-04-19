@@ -75,6 +75,19 @@ session_start();
             line-height: 1.6;
         }
 
+        .founder-content {
+            display: flex;
+            gap: 20px; /* Térköz a kép és szöveg között */
+            flex-wrap: wrap; /* Reszponzivitás érdekében */
+        }
+
+        .founder-img {
+            width: 200px; /* Kép mérete, igény szerint módosítható */
+            height: auto;
+            object-fit: cover; /* Kép arányos méretezése */
+            border-radius: 10px; /* Opcionális: lekerekített sarkok */
+        }
+
         .navbar-bottom {
             background: #000;
             padding: 20px 30px;
@@ -150,8 +163,13 @@ session_start();
     </nav>
 
     <div class="container" id="alapitonk">
-        <center><h2>Alapítónk</h2></center>
-        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Reprehenderit minus eligendi dicta laboriosam consequatur eius assumenda facilis exercitationem facere mollitia, officia vel maxime quidem. Corrupti.</p>
+        <center>
+            <h2>Alapítónk</h2>
+            <img src="img/alapito.jpg" alt="Alapító" class="founder-img">
+        </center>
+        <div class="founder-content d-flex align-items-start">
+            <p>A motorozás nekem gyerekkori szerelem. Hetedikes voltam, amikor a szüleimtől megkaptam életem első gépét – egy Romet kismotort. Onnantól kezdve a kétkerekűek világa teljesen beszippantott. Bár az évek során voltak kisebb-nagyobb szünetek, valahogy mindig visszataláltam a motorozáshoz. Most egy Yamaha FZS 1000 van alattam, ami nemcsak erős és megbízható, de valahol a szabadságot is jelképezi számomra. A közösségépítés gondolata 11 éve indult el bennem, amikor létrehoztam a Yamahások nevű Facebook csoportot. Eleinte csak páran voltunk, de mára több mint 4000 tagot számlálunk – és ez nemcsak egy szám, hanem rengeteg történet, közös túra, találkozás, barátság. A sok pozitív visszajelzés és az összetartás adta meg a lökést ahhoz, hogy 2023-ban hivatalosan is egyesületté alakuljunk. Azóta én látom el az elnöki feladatokat – ami néha sok szervezéssel jár, de rengeteg élményt is ad. Nekem a Yamahások nem csak egy motoros közösség. Ez egy olyan csapat, ahol jó emberekkel gurulhatunk együtt, ahol számítunk egymásra, és ahol mindig történik valami. Ha szereted a motorozást, a jó társaságot, és keresel egy helyet, ahol otthon érezheted magad, köztünk a helyed!</p>
+        </div>
     </div>
 
     <nav class="navbar navbar-black bg-black fixed-bottom custom-navbar">

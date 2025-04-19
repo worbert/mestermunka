@@ -151,7 +151,7 @@ session_start();
 
     <div class="container" id="rolunk">
         <center><h2>Rólunk</h2></center>
-        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Quae, harum. Maxime pariatur minus iure, error soluta harum cumque repellendus ea, exercitationem praesentium at asperiores consequatur.</p>
+        <p>A Yamahások Motoros Egyesület egy összetartó, lendületes közösség, ahol a motorozás több, mint hobbi – életérzés. Tagjainkat a közös szenvedély, a túrázás szeretete és a szabadság iránti vágy köti össze. Hiszünk abban, hogy a legjobb utak nemcsak térképen léteznek, hanem élményekben, barátságokban és közösen átélt kilométerekben is mérhetők. Egész évben változatos túrákat szervezünk – egynapostól a többnapos kalandokig – és mindenkit szívesen látunk, aki szeret gurulni, jó társaságban, biztonságban. A szezon csúcspontja az exkluzív, csak Yamahásoknak szóló éves nagyrendezvényünk, ahol pályamotorozás, vezetéstechnikai tréning és tesztmotorozás is várja a résztvevőket. Ha Yamahás vagy, és keresed azt a közösséget, ahol otthon érezheted magad, fejlődhetsz, és élményekkel gazdagodhatsz – ne habozz! Csatlakozz a Yamahásokhoz, és legyél részese valami igazán különlegesnek! Az út már vár rád.</p>
     </div>
 
     <nav class="navbar navbar-black bg-black fixed-bottom custom-navbar">
