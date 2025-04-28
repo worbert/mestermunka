@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Gép: 127.0.0.1
--- Létrehozás ideje: 2025. Ápr 09. 17:21
--- Kiszolgáló verziója: 10.4.32-MariaDB
--- PHP verzió: 8.2.12
+-- Létrehozás ideje: 2025. Ápr 15. 08:41
+-- Kiszolgáló verziója: 10.4.28-MariaDB
+-- PHP verzió: 8.2.4
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -39,8 +39,10 @@ CREATE TABLE `esemenyek` (
 --
 
 INSERT INTO `esemenyek` (`id`, `Idopont`, `KepURL`, `Helyszin`) VALUES
-(3, '2025-04-18', 'https://th.bing.com/th/id/R.e902cdb63741cce79fc34d3056c16fa3?rik=HG6%2bW%2bcsDW1xXQ&riu=http%3a%2f%2fwww.owl.hu%2fowl%2f3gallery%2fgownpic2011%2f2011_19_18q2.jpg&ehk=d1LzXXlpuZ%2fkAlKWaELoigM%2fczze2Z99V%2biytgVJO%2fg%3d&risl=&pid=ImgRaw&r=0', 'Kispest Hengersor'),
-(4, '2025-04-11', 'https://th.bing.com/th/id/OIP.fYSoeo4R7tYuGo31YF13MwHaEK?rs=1&pid=ImgDetMain', 'Budapest');
+(5, '2023-09-30', 'https://eu-prod.asyncgw.teams.microsoft.com/v1/objects/0-weu-d4-89dc0b67c0608b0aed23eca95bf3a669/views/imgo', '1. Yamaha Piknik'),
+(6, '2024-04-20', 'https://eu-prod.asyncgw.teams.microsoft.com/v1/objects/0-weu-d2-dca005e5a608b81ab90fd7702d774bcb/views/imgo', '2. Yamaha Piknik'),
+(7, '2024-07-13', 'https://eu-prod.asyncgw.teams.microsoft.com/v1/objects/0-frca-d6-03d7686afcd309ea553bf630affb49ef/views/imgo', '10. Yamaha Találkozó'),
+(8, '2025-05-10', 'https://eu-prod.asyncgw.teams.microsoft.com/v1/objects/0-weu-d16-977a3454566e3a498ce145c6e5a761e7/views/imgo', '3. Yamaha Piknik');
 
 -- --------------------------------------------------------
 
@@ -52,13 +54,6 @@ CREATE TABLE `esemeny_resztvevok` (
   `esemeny_id` int(11) NOT NULL,
   `felhasznalo_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_hungarian_ci;
-
---
--- A tábla adatainak kiíratása `esemeny_resztvevok`
---
-
-INSERT INTO `esemeny_resztvevok` (`esemeny_id`, `felhasznalo_id`) VALUES
-(4, 1);
 
 -- --------------------------------------------------------
 
@@ -79,7 +74,12 @@ CREATE TABLE `kepek` (
 --
 
 INSERT INTO `kepek` (`id`, `feltolto_id`, `Datum`, `KepURL`, `approved`) VALUES
-(5, 1, '2025-04-02', 'https://th.bing.com/th/id/OIP.oivuIedwoVk4ixPFn7HACwHaEK?rs=1&pid=ImgDetMain', 0);
+(7, 1, '2025-04-15', 'https://eu-prod.asyncgw.teams.microsoft.com/v1/objects/0-weu-d1-6ce135c52dc30f8095410ff0ea1d3cb1/views/imgo', 1),
+(8, 1, '2025-04-15', 'https://eu-prod.asyncgw.teams.microsoft.com/v1/objects/0-weu-d19-72758641e89211ddd55755fd7914b636/views/imgo', 1),
+(10, 1, '2025-04-15', 'https://eu-prod.asyncgw.teams.microsoft.com/v1/objects/0-weu-d3-6e0b47af2d86ab9717f935a9bc184bd8/views/imgo', 1),
+(11, 70, '2025-04-15', 'https://eu-prod.asyncgw.teams.microsoft.com/v1/objects/0-weu-d13-d003259d1f50f862ccd98fc63926108e/views/imgo', 1),
+(12, 70, '2025-04-15', 'https://eu-prod.asyncgw.teams.microsoft.com/v1/objects/0-weu-d1-84a551391b6a7dc645732e1f49ac4bbc/views/imgo', 1),
+(13, 1, '2025-04-15', 'https://eu-prod.asyncgw.teams.microsoft.com/v1/objects/0-weu-d4-54758100a7b1293ab2efea70cf898228/views/imgo', 1);
 
 -- --------------------------------------------------------
 
@@ -105,7 +105,6 @@ CREATE TABLE `users` (
 
 INSERT INTO `users` (`id`, `Vnev`, `Knev`, `Username`, `Email`, `Telefon`, `Password`, `Role`, `profile_pic`) VALUES
 (1, 'Admin', 'Admin', 'Admin123', 'admin123@gmail.com', '+36 70 2345678', '$2y$10$yAOzYbQEQlOyvKGMgriuX.FqWbIX3.IrV8u65GwWEupF5izz/BrOu', 1, 'profile_1.jpg'),
-(18, 'Példa', 'Ember', 'peldaember', 'peldaember@gmail.com', '06704568779', '$2y$10$BL7CcQsRX0T6gJzLcUPp9.9jpmInF3Fof.w9pD9ji26gvud7/PLQG', 1, NULL),
 (70, 'asd', 'asd', 'asd', 'asd@gmail.com', '06704568779', '$2y$10$JWmoizq1sNLwgl7Q7KYdsuW7dEmXUuRziQ5dT03jS5fUe2REVtSVe', 0, NULL);
 
 --
@@ -148,13 +147,13 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT a táblához `esemenyek`
 --
 ALTER TABLE `esemenyek`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT a táblához `kepek`
 --
 ALTER TABLE `kepek`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT a táblához `users`
